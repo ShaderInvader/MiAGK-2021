@@ -5,7 +5,7 @@
 
 struct Color
 {
-	uint8_t b, g, r, a;
+	uint8_t r, g, b, a;
 
 	Color();
 	Color(int r, int g, int b);

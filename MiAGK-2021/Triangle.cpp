@@ -43,7 +43,7 @@ void Triangle::setVerts(float3 p1, float3 p2, float3 p3)
 
 Color Triangle::rasterize(float x, float y, float& depth)
 {
-	Color outputColor;
+	Color outputColor(0, 0, 0, 0);
 
 	float dx12 = p1.x - p2.x;
 	float dx23 = p2.x - p3.x;

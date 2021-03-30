@@ -10,6 +10,10 @@ Buffer::Buffer(unsigned width, unsigned height)
 	this->height = height;
 	this->pixels = new Color[width * height];
 	this->depth = new float[width * height];
+	for (int i = 0; i < width * height; ++i)
+	{
+		depth[i] = 1.0f;
+	}
 }
 
 Buffer::Buffer(Buffer& buffer)
@@ -91,7 +95,7 @@ void Buffer::draw(Triangle& tri)
 		{
 			int index = y * height + x;
 			Color outColor = tri.rasterize(pixelsToCanonical(x, width), pixelsToCanonical(y, height), this->depth[index]);
-			if (outColor.a != 0)
+			if (outColor.a > 0.01f)
 			{
 				this->pixels[index] = outColor;
 			}

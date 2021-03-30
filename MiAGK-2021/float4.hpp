@@ -1,43 +1,39 @@
 #pragma once
-
 #include <ostream>
-#include <string>
 
-class float3
+class float3;
+
+class float4
 {
 public:
-	float x, y, z;
+	float x{}, y{}, z{}, w{};
 
 	/// <summary>
 	/// Create zero vector
 	/// </summary>
-	float3();
+	float4();
 
 	/// <summary>
 	/// Create vector assigning same value to all components
 	/// </summary>
 	/// <param name="value">initial value of all components</param>
-	float3(float value);
+	float4(float value);
 
 	/// <summary>
 	/// Create vector assigning different value to each component
 	/// </summary>
-	/// <param name="x">initial value of x component</param>
-	/// <param name="y">initial value of y component</param>
-	/// <param name="z">initial value of z component</param>
-	float3(float x, float y, float z);
+	float4(float x, float y, float z, float w);
+	
+	/// <summary>
+	/// Create vector assigning different value to each component
+	/// </summary>
+	float4(float3 v, float w);
 
 	/// <summary>
 	/// Create copy of given vector
 	/// </summary>
 	/// <param name="vector">original vector</param>
-	float3(const float3& vector);
-
-	static float3 Zero();
-	static float3 One();
-	static float3 Up();
-	static float3 Right();
-	static float3 Forward();
+	float4(const float4& vector) = default;
 
 	/// <summary>
 	/// Compute vector magnitude,
@@ -60,7 +56,7 @@ public:
 	/// <summary>
 	/// Create normalized copy of vector
 	/// </summary>
-	float3 normalized() const;
+	float4 normalized() const;
 
 	/// <summary>
 	/// Check if all components are equal zero
@@ -75,67 +71,62 @@ public:
 	/// <summary>
 	/// Compute scalar product of two vectors
 	/// </summary>
-	static float dot(const float3& v1, const float3& v2);
-
-	/// <summary>
-	/// Compute vector product of two vectors
-	/// </summary>
-	static float3 cross(const float3& v1, const float3& v2);
+	static float dot(const float4& v1, const float4& v2);
 
 	/// <summary>
 	/// Compute sum of two vectors
 	/// </summary>
-	float3 operator+(const float3& v) const;
+	float4 operator+(const float4& v) const;
 
 	/// <summary>
 	/// Compute difference of two vectors
 	/// </summary>
-	float3 operator-(const float3& v) const;
+	float4 operator-(const float4& v) const;
 
 	/// <summary>
 	/// Compute componentwise product of two vectors
 	/// </summary>
-	float3 operator*(const float3& v) const;
+	float4 operator*(const float4& v) const;
 
 	/// <summary>
 	/// Compute product of vector and scalar
 	/// </summary>
-	float3 operator*(float f) const;
+	float4 operator*(float f) const;
 
 	/// <summary>
 	/// Compute quotient of vector and scalar
 	/// </summary>
-	float3 operator/(float f) const;
+	float4 operator/(float f) const;
 
 	/// <summary>
 	/// Create copy of vector with negated components
 	/// </summary>
-	float3 operator-() const;
+	float4 operator-() const;
 
 	/// <summary>
 	/// Add vector to another
 	/// </summary>
-	float3& operator+=(const float3& v);
+	float4& operator+=(const float4& v);
 
 	/// <summary>
 	/// Subtract vector from another
 	/// </summary>
-	float3& operator-=(const float3& v);
+	float4& operator-=(const float4& v);
 
 	/// <summary>
 	/// Multiply vector by another componentwise
 	/// </summary>
-	float3& operator*=(const float3& v);
+	float4& operator*=(const float4& v);
 
 	/// <summary>
 	/// Multiply vector by scalar
 	/// </summary>
-	float3& operator*=(float f);
+	float4& operator*=(float f);
 
 	/// <summary>
 	/// Divide vector by scalar
 	/// </summary>
-	float3& operator/=(float f);
+	float4& operator/=(float f);
 
 	float& operator[](int i);
 };
@@ -144,9 +135,9 @@ public:
 /// <summary>
 /// Compute product of scalar and vector
 /// </summary>
-float3 operator*(float f, const float3& v);
+float4 operator*(float f, const float4& v);
 
 /// <summary>
 /// Put string representation of Vector3 into output stream 
 /// </summary>
-std::ostream& operator<<(std::ostream& os, const float3& vector);
+std::ostream& operator<<(std::ostream& os, const float4& vector);
