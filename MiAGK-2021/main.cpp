@@ -1,6 +1,3 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 #include "Buffer.hpp"
 #include "Triangle.hpp"
 
@@ -36,5 +33,5 @@ int main(int argc, char* argv[])
 	img.draw(tri);
 	img.draw(tri3);
 
-	stbi_write_tga("generated/xd.tga", img.getWidth(), img.getHeight(), 4, img.getPixels());
+	img.saveToFile("generated/xd.png");
 }

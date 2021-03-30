@@ -1,85 +1,130 @@
 #include "Buffer.hpp"
 #include <algorithm>
 
-Buffer::Buffer(unsigned width, unsigned height, unsigned data[])
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
+Buffer::Buffer(unsigned width, unsigned height)
 {
 	this->width = width;
 	this->height = height;
-	this->data = new unsigned[width * height];
+	this->pixels = new Color[width * height];
 	this->depth = new float[width * height];
-	for (int i = 0; i < width * height; i++)
+}
+
+Buffer::Buffer(Buffer& buffer)
+{
+	width = buffer.width;
+	height = buffer.height;
+	pixels = new Color[width * height];
+	for (int i = 0; i < width * height; ++i)
 	{
-		this->depth[i] = 1.0f;
+		pixels[i] = buffer.getPixel(i);
 	}
-	setPixels(data);
-}
-
-void Buffer::setPixels(unsigned data[])
-{
-	if (data != nullptr)
+	depth = new float[width * height];
+	for (int i = 0; i < width * height; ++i)
 	{
-		for (unsigned i = 0; i < width * height; ++i)
-		{
-			this->data[i] = data[i];
-		}
+		depth[i] = buffer.getDepth(i);
 	}
 }
 
-void Buffer::setPixel(float x, float y, Color color)
+void Buffer::setPixel(float x, float y, Color color) const
 {
-	unsigned index = (static_cast<unsigned>(x) * width + static_cast<unsigned>(y) * height);
-	data[index] = color.getEncoded();
+	pixels[calculateIndex(x, y)] = color;
 }
 
-unsigned* Buffer::getPixels()
+void Buffer::setPixel(int x, int y, Color color) const
 {
-	return data;
+	pixels[calculateIndex(x, y)] = color;
 }
 
-void Buffer::clearColor(Color color)
+Color* Buffer::getPixels() const
+{
+	return pixels;
+}
+
+Color Buffer::getPixel(int index) const
+{
+	return pixels[index];
+}
+
+Color Buffer::getPixel(int x, int y) const
+{
+	return pixels[calculateIndex(x, y)];
+}
+
+float Buffer::getDepth(int x, int y) const
+{
+	return depth[calculateIndex(x, y)];
+}
+
+float Buffer::getDepth(int index) const
+{
+	return depth[index];
+}
+
+void Buffer::clearColor(Color color) const
 {
 	for (unsigned i = 0; i < width * height; ++i)
 	{
-		this->data[i] = color.getEncoded();
+		this->pixels[i] = color;
 	}
+}
+
+void Buffer::saveToFile(std::string path) const
+{
+	stbi_write_png(path.c_str(), width, height, 4, pixels, width * 4 * sizeof(uint8_t));
 }
 
 void Buffer::draw(Triangle& tri)
 {
 	float3 minBounds = tri.getMinBounds();
 	float3 maxBounds = tri.getMaxBounds();
-	int minX = std::clamp(toNormalized(minBounds.x), 0.0f, 1.0f) * width;
-	int maxX = std::clamp(toNormalized(maxBounds.x), 0.0f, 1.0f) * width;
-	int minY = std::clamp(toNormalized(minBounds.y), 0.0f, 1.0f) * height;
-	int maxY = std::clamp(toNormalized(maxBounds.y), 0.0f, 1.0f) * height;
+	int minX = std::clamp(canonicalToNormalized(minBounds.x), 0.0f, 1.0f) * width;
+	int maxX = std::clamp(canonicalToNormalized(maxBounds.x), 0.0f, 1.0f) * width;
+	int minY = std::clamp(canonicalToNormalized(minBounds.y), 0.0f, 1.0f) * height;
+	int maxY = std::clamp(canonicalToNormalized(maxBounds.y), 0.0f, 1.0f) * height;
 	
 	for (int x = minX; x < maxX; ++x)
 	{
 		for (int y = minY; y < maxY; ++y)
 		{
 			int index = y * height + x;
-			Color outColor = tri.rasterize(toCanonical(x, width), toCanonical(y, height), this->depth[index]);
+			Color outColor = tri.rasterize(pixelsToCanonical(x, width), pixelsToCanonical(y, height), this->depth[index]);
 			if (outColor.a != 0)
 			{
-				this->data[index] = outColor.getEncoded();
-				// Z-buffer test
-				//this->data[index] = Color(this->depth[index], this->depth[index], this->depth[index]).getEncoded();
+				this->pixels[index] = outColor;
 			}
 		}
 	}
 }
 
-unsigned Buffer::floatToInt(float value)
+unsigned Buffer::calculateIndex(int x, int y) const
 {
-	return static_cast<unsigned>(value * 255);
+	return y * width + x;
 }
 
-float Buffer::toCanonical(unsigned value, unsigned dimensionRes)
+unsigned Buffer::calculateIndex(float x, float y) const
 {
-	return ((float)value / dimensionRes) * 2.0f - 1.0f;
+	return canonicalToPixels(-y, height) * width + canonicalToPixels(x, width);
 }
 
-float Buffer::toNormalized(float canonical)
+float Buffer::pixelsToCanonical(int value, int resolution)
+{
+	return normalizedToCanonical(static_cast<float>(value) / static_cast<float>(resolution - 1));
+}
+
+unsigned Buffer::canonicalToPixels(float value, unsigned resolution)
+{
+	return static_cast<unsigned>(canonicalToNormalized(value) * static_cast<float>(resolution - 1));
+}
+
+float Buffer::canonicalToNormalized(float canonical)
 {
 	return canonical * 0.5f + 0.5f;
+}
+
+float Buffer::normalizedToCanonical(float normalized)
+{
+	return normalized * 2.0f - 1.0f;
 }

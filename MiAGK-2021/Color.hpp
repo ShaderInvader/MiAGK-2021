@@ -1,85 +1,57 @@
 #pragma once
 #include <cstdint>
+#include <string>
+#include <ostream>
 
 struct Color
 {
 	uint8_t b, g, r, a;
 
-	Color()
-	{
-		b = 0;
-		g = 0;
-		r = 0;
-		a = 0;
-	}
-	
-	Color(uint8_t r, uint8_t g, uint8_t b)
-	{
-		this->b = b;
-		this->g = g;
-		this->r = r;
-		this->a = 255;
-	}
-	
-	Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
-	{
-		this->b = b;
-		this->g = g;
-		this->r = r;
-		this->a = a;
-	}
-	
-	Color(float r, float g, float b)
-	{
-		this->b = static_cast<uint8_t>(b * 255);
-		this->g = static_cast<uint8_t>(g * 255);
-		this->r = static_cast<uint8_t>(r * 255);
-		this->a = 255;
-	}
-	
-	Color(float r, float g, float b, float a)
-	{
-		this->b = static_cast<uint8_t>(b * 255);
-		this->g = static_cast<uint8_t>(g * 255);
-		this->r = static_cast<uint8_t>(r * 255);
-		this->a = static_cast<uint8_t>(a * 255);
-	}
-
+	Color();
+	Color(int r, int g, int b);
+	Color(int r, int g, int b, int a);
+	Color(float r, float g, float b);
+	Color(float r, float g, float b, float a);
 	
 	/// <summary>
 	/// A safe way of getting the 32 bit color representation
 	/// </summary>
 	/// <returns>32bit little endian color representation</returns>
-	unsigned getEncoded()
-	{
-		unsigned color = 0;
-		color |= a;
-		color <<= 8;
-		color |= b;
-		color <<= 8;
-		color |= g;
-		color <<= 8;
-		color |= r;
-		return color;
-	}
+	unsigned getEncoded() const;
 
-	Color operator*(float val) const
-	{
-		Color col;
-		col.r = static_cast<uint8_t>(val * (float)r);
-		col.g = static_cast<uint8_t>(val * (float)g);
-		col.b = static_cast<uint8_t>(val * (float)b);
-		col.a = a;
-		return col;
-	}
+	/// <summary>
+	/// Compute sum of two colors
+	/// </summary>
+	Color operator+(Color c) const;
+	/// <summary>
+	/// Compute difference of two colors
+	/// </summary>
+	Color operator-(Color c) const;
+	/// <summary>
+	/// Compute component-wise product of two colors 
+	/// </summary>
+	Color operator*(Color c) const;
+	/// <summary>
+	/// Compute product of color and scalar
+	/// </summary>
+	Color operator*(float mul) const;
+	/// <summary>
+	/// Compute quotient of color and scalar
+	/// </summary>
+	Color operator/(float mul) const;
 
-	Color operator+(Color col) const
-	{
-		Color out;
-		out.r = static_cast<uint8_t>((unsigned)col.r + (unsigned)r);
-		out.g = static_cast<uint8_t>((unsigned)col.g + (unsigned)g);
-		out.b = static_cast<uint8_t>((unsigned)col.b + (unsigned)b);
-		out.a = static_cast<uint8_t>((unsigned)col.a + (unsigned)a);
-		return out;
-	}
+	/// <summary>
+	/// Create std::string from given color in format "[ r: {r}, g: {g}, b: {b} ]"
+	/// </summary>
+	[[nodiscard]] std::string to_string() const;
 };
+
+/// <summary>
+/// Compute product of color and scalar
+/// </summary>
+Color operator*(float mul, Color c);
+
+/// <summary>
+/// Put string representation of color into output stream 
+/// </summary>
+std::ostream& operator<<(std::ostream& os, Color c);
