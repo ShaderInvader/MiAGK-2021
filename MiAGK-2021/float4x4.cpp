@@ -11,13 +11,21 @@ float4x4::float4x4(float initial)
 	}
 }
 
+float4x4::float4x4(float4 col1, float4 col2, float4 col3, float4 col4)
+{
+	column[0] = col1;
+	column[1] = col2;
+	column[2] = col3;
+	column[3] = col4;
+}
+
 float4x4 float4x4::identity()
 {
 	float4x4 matrix;
 	matrix[0] = { 1.0f, 0.0f, 0.0f, 0.0f };
 	matrix[1] = { 0.0f, 1.0f, 0.0f, 0.0f };
 	matrix[2] = { 0.0f, 0.0f, 1.0f, 0.0f };
-	matrix[3] = { 0.0f, 0.0f, 1.0f, 1.0f };
+	matrix[3] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	return matrix;
 }
 
@@ -31,6 +39,7 @@ float4x4 float4x4::mul(float4x4& a, float4x4& b)
 			mat[k][w] = float4::dot(a.getRow(w), b.getColumn(k));
 		}
 	}
+	return mat;
 }
 
 float4x4 float4x4::mul(float v, const float4x4& a)
@@ -43,6 +52,17 @@ float4x4 float4x4::mul(float v, const float4x4& a)
 			mat[k][w] *= v;
 		}
 	}
+	return mat;
+}
+
+float4 float4x4::mul(float4& a, float4x4& b)
+{
+	float4 vec;
+	for (int k = 0; k < 4; ++k)
+	{
+		vec[k] = float4::dot(a, b.getColumn(k));
+	}
+	return vec;
 }
 
 float4& float4x4::operator[](int i)
@@ -52,12 +72,12 @@ float4& float4x4::operator[](int i)
 
 float4 float4x4::getRow(int i)
 {
-	return column[i];
+	return float4(column[0][i], column[1][i], column[2][i], column[3][i]);
 }
 
 float4 float4x4::getColumn(int i)
 {
-	return float4(column[0][i], column[1][i], column[2][i], column[3][i]);
+	return column[i];
 }
 
 void float4x4::transpose()
@@ -72,10 +92,10 @@ void float4x4::transpose()
 	}
 }
 
-std::string float4x4::to_string() const
+std::string float4x4::to_string()
 {
-	return	column[0].to_string() + "\n" +
-		column[1].to_string() + "\n" +
-		column[2].to_string() + "\n" +
-		column[2].to_string();
+	return	getRow(0).to_string() + "\n" +
+		getRow(1).to_string() + "\n" +
+		getRow(2).to_string() + "\n" +
+		getRow(3).to_string() + "\n";
 }

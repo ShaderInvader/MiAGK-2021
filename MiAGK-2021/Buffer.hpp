@@ -2,6 +2,7 @@
 
 #include "Triangle.hpp"
 #include "Color.hpp"
+#include "VertexProcessor.hpp"
 
 class Buffer
 {
@@ -81,6 +82,8 @@ public:
 	[[nodiscard]] unsigned getHeight() const { return height; }
 
 	void draw(Triangle& tri);
+
+	VertexProcessor* vp = nullptr;
 
 private:
 	[[nodiscard]] unsigned calculateIndex(int x, int y) const;

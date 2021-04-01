@@ -148,6 +148,7 @@
     <ClCompile Include="float4x4.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="VertexProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.hpp" />
@@ -157,6 +158,8 @@
     <ClInclude Include="float4x4.hpp" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Triangle.hpp" />
+    <ClInclude Include="Vertex.hpp" />
+    <ClInclude Include="VertexProcessor.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

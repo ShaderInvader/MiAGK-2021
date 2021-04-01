@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "float4.hpp"
+
 float3::float3()
 {
 	x = 0;
@@ -24,6 +26,13 @@ float3::float3(float x, float y, float z)
 }
 
 float3::float3(const float3& vector)
+{
+	x = vector.x;
+	y = vector.y;
+	z = vector.z;
+}
+
+float3::float3(float4 vector)
 {
 	x = vector.x;
 	y = vector.y;

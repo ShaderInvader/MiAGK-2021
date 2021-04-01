@@ -82,8 +82,12 @@ void Buffer::saveToFile(std::string path) const
 
 void Buffer::draw(Triangle& tri)
 {
-	float3 minBounds = tri.getMinBounds();
-	float3 maxBounds = tri.getMaxBounds();
+	if (vp != nullptr)
+	{
+		vp->transformTriangle(tri);
+	}
+	float3 minBounds, maxBounds;
+	tri.calculateBounds(minBounds, maxBounds);
 	int minX = std::clamp(canonicalToNormalized(minBounds.x), 0.0f, 1.0f) * width;
 	int maxX = std::clamp(canonicalToNormalized(maxBounds.x), 0.0f, 1.0f) * width;
 	int minY = std::clamp(canonicalToNormalized(minBounds.y), 0.0f, 1.0f) * height;

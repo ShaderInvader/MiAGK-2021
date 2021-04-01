@@ -2,76 +2,72 @@
 
 Triangle::Triangle()
 {
-	p1 = { 0.0f, 0.0f, 0.0f };
-	p2 = { 0.0f, 0.0f, 0.0f };
-	p3 = { 0.0f, 0.0f, 0.0f };
-	c1 = { 1.0f, 1.0f, 1.0f };
-	c2 = { 1.0f, 1.0f, 1.0f };
-	c3 = { 1.0f, 1.0f, 1.0f };
-	calculateBounds();
+	tv1.pos = v1.pos = { 0.0f, 0.0f, 0.0f };
+	tv2.pos = v2.pos = { 0.0f, 0.0f, 0.0f };
+	tv3.pos = v3.pos = { 0.0f, 0.0f, 0.0f };
+	v1.col = { 1.0f, 1.0f, 1.0f };
+	v2.col = { 1.0f, 1.0f, 1.0f };
+	v3.col = { 1.0f, 1.0f, 1.0f };
 }
 
 Triangle::Triangle(float3 p1, float3 p2, float3 p3)
 {
-	this->p1 = p1;
-	this->p2 = p2;
-	this->p3 = p3;
-	c1 = { 1.0f, 1.0f, 1.0f };
-	c2 = { 1.0f, 1.0f, 1.0f };
-	c3 = { 1.0f, 1.0f, 1.0f };
-	calculateBounds();
+	tv1.pos = v1.pos = p1;
+	tv2.pos = v2.pos = p2;
+	tv3.pos = v3.pos = p3;
+	v1.col = { 1.0f, 1.0f, 1.0f };
+	v2.col = { 1.0f, 1.0f, 1.0f };
+	v3.col = { 1.0f, 1.0f, 1.0f };
 }
 
 Triangle::Triangle(float3 p1, float3 p2, float3 p3, Color c1, Color c2, Color c3)
 {
-	this->p1 = p1;
-	this->p2 = p2;
-	this->p3 = p3;
-	this->c1 = c1;
-	this->c2 = c2;
-	this->c3 = c3;
-	calculateBounds();
+	tv1.pos = v1.pos = p1;
+	tv2.pos = v2.pos = p2;
+	tv3.pos = v3.pos = p3;
+	v1.col = c1;
+	v2.col = c2;
+	v3.col = c3;
 }
 
 void Triangle::setVerts(float3 p1, float3 p2, float3 p3)
 {
-	this->p1 = p1;
-	this->p2 = p2;
-	this->p3 = p3;
-	calculateBounds();
+	v1.pos = p1;
+	v2.pos = p2;
+	v3.pos = p3;
 }
 
 Color Triangle::rasterize(float x, float y, float& depth)
 {
 	Color outputColor(0, 0, 0, 0);
 
-	float dx12 = p1.x - p2.x;
-	float dx23 = p2.x - p3.x;
-	float dx31 = p3.x - p1.x;
-	float dy12 = p1.y - p2.y;
-	float dy23 = p2.y - p3.y;
-	float dy31 = p3.y - p1.y;
+	float dx12 = tv1.pos.x - tv2.pos.x;
+	float dx23 = tv2.pos.x - tv3.pos.x;
+	float dx31 = tv3.pos.x - tv1.pos.x;
+	float dy12 = tv1.pos.y - tv2.pos.y;
+	float dy23 = tv2.pos.y - tv3.pos.y;
+	float dy31 = tv3.pos.y - tv1.pos.y;
 
 	bool tl1 = (dy12 < 0.0f) || (dy12 == 0.0f && dx12 > 0.0f);
 	bool tl2 = (dy23 < 0.0f) || (dy23 == 0.0f && dx23 > 0.0f);
 	bool tl3 = (dy31 < 0.0f) || (dy31 == 0.0f && dx31 > 0.0f);
 	
-	float cond1 = dx12 * (y - p1.y) - dy12 * (x - p1.x);
-	float cond2 = dx23 * (y - p2.y) - dy23 * (x - p2.x);
-	float cond3 = dx31 * (y - p3.y) - dy31 * (x - p3.x);
+	float cond1 = dx12 * (y - tv1.pos.y) - dy12 * (x - tv1.pos.x);
+	float cond2 = dx23 * (y - tv2.pos.y) - dy23 * (x - tv2.pos.x);
+	float cond3 = dx31 * (y - tv3.pos.y) - dy31 * (x - tv3.pos.x);
 
-	float lambda1 = ((p2.y - p3.y) * (x - p3.x) + (p3.x - p2.x) * (y - p3.y)) / ((p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y));
-	float lambda2 = ((p3.y - p1.y) * (x - p3.x) + (p1.x - p3.x) * (y - p3.y)) / ((p3.y - p1.y) * (p2.x - p3.x) + (p1.x - p3.x) * (p2.y - p3.y));
+	float lambda1 = ((tv2.pos.y - tv3.pos.y) * (x - tv3.pos.x) + (tv3.pos.x - tv2.pos.x) * (y - tv3.pos.y)) / ((tv2.pos.y - tv3.pos.y) * (tv1.pos.x - tv3.pos.x) + (tv3.pos.x - tv2.pos.x) * (tv1.pos.y - tv3.pos.y));
+	float lambda2 = ((tv3.pos.y - tv1.pos.y) * (x - tv3.pos.x) + (tv1.pos.x - tv3.pos.x) * (y - tv3.pos.y)) / ((tv3.pos.y - tv1.pos.y) * (tv2.pos.x - tv3.pos.x) + (tv1.pos.x - tv3.pos.x) * (tv2.pos.y - tv3.pos.y));
 	float lambda3 = 1.0f - lambda1 - lambda2;
 	
 	if ( ((cond1 > 0.0f && !tl1) || (cond1 >= 0.0f && tl1)) && 
 		 ((cond2 > 0.0f && !tl2) || (cond2 >= 0.0f && tl2)) &&
 		 ((cond3 > 0.0f && !tl3) || (cond3 >= 0.0f && tl3)))
 	{
-		float triDepth = (p1.z * lambda1) + (p2.z * lambda2) + (p3.z * lambda3);
+		float triDepth = (tv1.pos.z * lambda1) + (tv2.pos.z * lambda2) + (tv3.pos.z * lambda3);
 		if (triDepth < depth)
 		{
-			outputColor = (c1 * lambda1) + (c2 * lambda2) + (c3 * lambda3);
+			outputColor = (v1.col * lambda1) + (v2.col * lambda2) + (v3.col * lambda3);
 			depth = triDepth;
 		}
 	}
@@ -79,38 +75,10 @@ Color Triangle::rasterize(float x, float y, float& depth)
 	return outputColor;
 }
 
-float3 Triangle::getMinBounds()
+void Triangle::calculateBounds(float3& min, float3& max) const
 {
-	return min;
-}
-
-float3 Triangle::getMaxBounds()
-{
-	return max;
-}
-
-void Triangle::calculateBounds()
-{
-	min.x = getMin(getMin(p1.x, p2.x), p3.x);
-	max.x = getMax(getMax(p1.x, p2.x), p3.x);
-	min.y = getMin(getMin(p1.y, p2.y), p3.y);
-	max.y = getMax(getMax(p1.y, p2.y), p3.y);
-}
-
-float Triangle::getMin(float x, float y)
-{
-	if (x < y)
-	{
-		return x;
-	}
-	return y;
-}
-
-float Triangle::getMax(float x, float y)
-{
-	if (x > y)
-	{
-		return x;
-	}
-	return y;
+	min.x = std::min(std::min(v1.pos.x, v2.pos.x), v3.pos.x);
+	max.x = std::max(std::max(v1.pos.x, v2.pos.x), v3.pos.x);
+	min.y = std::min(std::min(v1.pos.y, v2.pos.y), v3.pos.y);
+	max.y = std::max(std::max(v1.pos.y, v2.pos.y), v3.pos.y);
 }

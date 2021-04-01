@@ -3,6 +3,8 @@
 #include <ostream>
 #include <string>
 
+class float4;
+
 class float3
 {
 public:
@@ -32,6 +34,8 @@ public:
 	/// </summary>
 	/// <param name="vector">original vector</param>
 	float3(const float3& vector);
+
+	float3(float4 vector);
 
 	static float3 Zero();
 	static float3 One();
