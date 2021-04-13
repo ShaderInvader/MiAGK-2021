@@ -86,7 +86,7 @@ void Buffer::draw(Triangle& tri)
 	{
 		vp->transformTriangle(tri);
 	}
-	float3 minBounds, maxBounds;
+	float3 minBounds = { -1.0f, -1.0f, 0.0f }, maxBounds = {1.0f, 1.0f, 0.0f};
 	tri.calculateBounds(minBounds, maxBounds);
 	int minX = std::clamp(canonicalToNormalized(minBounds.x), 0.0f, 1.0f) * width;
 	int maxX = std::clamp(canonicalToNormalized(maxBounds.x), 0.0f, 1.0f) * width;

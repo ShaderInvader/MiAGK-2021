@@ -77,8 +77,8 @@ Color Triangle::rasterize(float x, float y, float& depth)
 
 void Triangle::calculateBounds(float3& min, float3& max) const
 {
-	min.x = std::min(std::min(v1.pos.x, v2.pos.x), v3.pos.x);
-	max.x = std::max(std::max(v1.pos.x, v2.pos.x), v3.pos.x);
-	min.y = std::min(std::min(v1.pos.y, v2.pos.y), v3.pos.y);
-	max.y = std::max(std::max(v1.pos.y, v2.pos.y), v3.pos.y);
+	min.x = std::min(std::min(tv1.pos.x, tv2.pos.x), tv3.pos.x);
+	max.x = std::max(std::max(tv1.pos.x, tv2.pos.x), tv3.pos.x);
+	min.y = std::min(std::min(tv1.pos.y, tv2.pos.y), tv3.pos.y);
+	max.y = std::max(std::max(tv1.pos.y, tv2.pos.y), tv3.pos.y);
 }

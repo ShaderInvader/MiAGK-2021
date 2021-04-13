@@ -60,7 +60,7 @@ float4 float4x4::mul(float4& a, float4x4& b)
 	float4 vec;
 	for (int k = 0; k < 4; ++k)
 	{
-		vec[k] = float4::dot(a, b.getColumn(k));
+		vec[k] = float4::dot(a, b.getRow(k));
 	}
 	return vec;
 }
@@ -72,7 +72,8 @@ float4& float4x4::operator[](int i)
 
 float4 float4x4::getRow(int i)
 {
-	return float4(column[0][i], column[1][i], column[2][i], column[3][i]);
+	float4 ret = float4(column[0][i], column[1][i], column[2][i], column[3][i]);
+	return ret;
 }
 
 float4 float4x4::getColumn(int i)
@@ -82,13 +83,10 @@ float4 float4x4::getColumn(int i)
 
 void float4x4::transpose()
 {
-	float4x4 tempMat(*this);
+	float4x4 tempMat = *this;
 	for (int k = 0; k < 4; ++k)
 	{
-		for (int w = 0; w < 4; ++w)
-		{
-			this[k][w] = tempMat[w][k];
-		}
+		column[k] = tempMat.getRow(k);
 	}
 }
 
