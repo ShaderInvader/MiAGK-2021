@@ -2,6 +2,8 @@
 #include <algorithm>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <iostream>
+
 #include "stb_image_write.h"
 
 Buffer::Buffer(unsigned width, unsigned height)
@@ -77,7 +79,7 @@ void Buffer::clearColor(Color color) const
 
 void Buffer::saveToFile(std::string path) const
 {
-	stbi_write_png(path.c_str(), width, height, 4, pixels, width * 4 * sizeof(uint8_t));
+	stbi_write_png(path.c_str(), width, height, 4, pixels, height * 4 * sizeof(uint8_t));
 }
 
 void Buffer::draw(Triangle& tri)
@@ -93,9 +95,9 @@ void Buffer::draw(Triangle& tri)
 	int minY = std::clamp(canonicalToNormalized(minBounds.y), 0.0f, 1.0f) * height;
 	int maxY = std::clamp(canonicalToNormalized(maxBounds.y), 0.0f, 1.0f) * height;
 	
-	for (int x = minX; x < maxX; ++x)
+	for (int y = minY; y < maxY; ++y)
 	{
-		for (int y = minY; y < maxY; ++y)
+		for (int x = minX; x < maxX; ++x)
 		{
 			int index = y * height + x;
 			Color outColor = tri.rasterize(pixelsToCanonical(x, width), pixelsToCanonical(y, height), this->depth[index]);
@@ -119,12 +121,17 @@ unsigned Buffer::calculateIndex(float x, float y) const
 
 float Buffer::pixelsToCanonical(int value, int resolution)
 {
-	return normalizedToCanonical(static_cast<float>(value) / static_cast<float>(resolution - 1));
+	return normalizedToCanonical(static_cast<float>(value) / static_cast<float>(resolution));
+}
+
+float Buffer::pixelsToNormalized(int value, int resolution)
+{
+	return static_cast<float>(value) / static_cast<float>(resolution);
 }
 
 unsigned Buffer::canonicalToPixels(float value, unsigned resolution)
 {
-	return static_cast<unsigned>(canonicalToNormalized(value) * static_cast<float>(resolution - 1));
+	return static_cast<unsigned>(canonicalToNormalized(value) * static_cast<float>(resolution));
 }
 
 float Buffer::canonicalToNormalized(float canonical)

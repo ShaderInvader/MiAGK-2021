@@ -1,5 +1,7 @@
 #include "Triangle.hpp"
 
+#include <iostream>
+
 Triangle::Triangle()
 {
 	tv1.pos = v1.pos = { 0.0f, 0.0f, 0.0f };
@@ -15,9 +17,9 @@ Triangle::Triangle(float3 p1, float3 p2, float3 p3)
 	tv1.pos = v1.pos = p1;
 	tv2.pos = v2.pos = p2;
 	tv3.pos = v3.pos = p3;
-	v1.col = { 1.0f, 1.0f, 1.0f };
-	v2.col = { 1.0f, 1.0f, 1.0f };
-	v3.col = { 1.0f, 1.0f, 1.0f };
+	v1.col = { 1.0f, 0.0f, 0.0f };
+	v2.col = { 0.0f, 1.0f, 0.0f };
+	v3.col = { 0.0f, 0.0f, 1.0f };
 }
 
 Triangle::Triangle(float3 p1, float3 p2, float3 p3, Color c1, Color c2, Color c3)
@@ -59,6 +61,11 @@ Color Triangle::rasterize(float x, float y, float& depth)
 	float lambda1 = ((tv2.pos.y - tv3.pos.y) * (x - tv3.pos.x) + (tv3.pos.x - tv2.pos.x) * (y - tv3.pos.y)) / ((tv2.pos.y - tv3.pos.y) * (tv1.pos.x - tv3.pos.x) + (tv3.pos.x - tv2.pos.x) * (tv1.pos.y - tv3.pos.y));
 	float lambda2 = ((tv3.pos.y - tv1.pos.y) * (x - tv3.pos.x) + (tv1.pos.x - tv3.pos.x) * (y - tv3.pos.y)) / ((tv3.pos.y - tv1.pos.y) * (tv2.pos.x - tv3.pos.x) + (tv1.pos.x - tv3.pos.x) * (tv2.pos.y - tv3.pos.y));
 	float lambda3 = 1.0f - lambda1 - lambda2;
+
+	//if (y >= 0.5f)
+	//{
+	//	std::cout << "xd\n";
+	//}
 	
 	if ( ((cond1 > 0.0f && !tl1) || (cond1 >= 0.0f && tl1)) && 
 		 ((cond2 > 0.0f && !tl2) || (cond2 >= 0.0f && tl2)) &&

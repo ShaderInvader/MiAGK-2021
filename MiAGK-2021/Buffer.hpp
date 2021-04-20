@@ -90,6 +90,7 @@ private:
 	[[nodiscard]] unsigned calculateIndex(float x, float y) const;
 	static float pixelsToCanonical(int value, int resolution);
 	static unsigned canonicalToPixels(float value, unsigned resolution);
+	static float pixelsToNormalized(int value, int resolution);
 	static float canonicalToNormalized(float canonical);
 	static float normalizedToCanonical(float normalized);
 	

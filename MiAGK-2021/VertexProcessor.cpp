@@ -16,7 +16,7 @@ float3 VertexProcessor::transformVertex(float4 vertex)
 	vertex = float4x4::mul(vertex, model);
 	vertex = float4x4::mul(vertex, view);
 	vertex = float4x4::mul(vertex, projection);
-	vertex = vertex / -vertex.w;
+	vertex /= vertex.w;
 	return vertex;
 }
 
@@ -36,9 +36,8 @@ float4x4 VertexProcessor::makePerspective(float fovy, float aspectRatio, float n
 		{f / aspectRatio, 0.0f, 0.0f, 0.0f},
 		{0.0f, f, 0.0f, 0.0f},
 		{0.0f, 0.0f, (farPlane + nearPlane)/(nearPlane - farPlane), -1.0f},
-		{0.0f, 0.0f, (2.0f * farPlane * nearPlane)/(nearPlane * farPlane), 0.0f}
+		{0.0f, 0.0f, (2.0f * farPlane * nearPlane)/(nearPlane - farPlane), 0.0f}
 	};
-	mat.transpose();
 	return mat;
 }
 
@@ -49,14 +48,21 @@ float4x4 VertexProcessor::lookAt(float3 eye, float3 center, float3 up)
 	up.normalize();
 	float3 s = float3::cross(f, up);
 	float3 u = float3::cross(s, f);
-	float4x4 mat =
+	/*float4x4 mat =
 	{
 		{s[0], u[0], -f[0], 0.0f},
 		{s[1], u[1], -f[1], 0.0f},
 		{s[2], u[2], -f[2], 0.0f},
+		{-eye.x, -eye.y, -eye.z, 1.0f}
+	};*/
+	float4x4 mat =
+	{
+		{s[0], s[1], s[2], -eye.x},
+		{u[0], u[1], u[2], -eye.y},
+		{-f[0], -f[1], -f[2], -eye.z},
 		{0.0f, 0.0f, 0.0f, 1.0f}
 	};
-	mat.transpose();
+	//mat.transpose();
 	float4x4 ident = float4x4::identity();
 	ident[3] = float4(-eye, 1.0f);
 	return float4x4::mul(mat, ident);

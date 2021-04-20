@@ -156,6 +156,7 @@
     <ClInclude Include="Buffer.hpp" />
     <ClInclude Include="float4.hpp" />
     <ClInclude Include="float4x4.hpp" />
+    <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Triangle.hpp" />
     <ClInclude Include="Vertex.hpp" />
