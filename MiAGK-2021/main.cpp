@@ -2,6 +2,7 @@
 
 #include "Buffer.hpp"
 #include "float4x4.hpp"
+#include "Mesh.hpp"
 #include "Triangle.hpp"
 #include "VertexProcessor.hpp"
 
@@ -12,86 +13,34 @@ int main(int argc, char* argv[])
 {
 	VertexProcessor vp;
 	vp.projection = VertexProcessor::makePerspective(80, (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.01f, 100.0f);
-	vp.view = VertexProcessor::lookAt({ 0.5f, -0.5f, 2.5f }, { 0.75f, -0.75f, 0.5f }, float3::Up());
+	//vp.view = VertexProcessor::lookAt({ 0.5f, -0.5f, 2.5f }, { 0.75f, -0.75f, 0.5f }, float3::Up());
+	vp.view = VertexProcessor::lookAt({ 0.0f, -0.3f, 2.5f }, { 0.0f, -0.5f, 0.0f }, float3::Up());
 	Buffer img(WINDOW_WIDTH, WINDOW_HEIGHT);
 	img.vp = &vp;
 
-	float4x4 modelMatrix = float4x4::identity();
-	VertexProcessor::translate(modelMatrix, { 0.0f, 0.0f, 0.0f });
-	//VertexProcessor::rotate(modelMatrix, -35.0f, { 0.0f, 0.0f, 1.0f });
-	//VertexProcessor::scale(modelMatrix, { 1.25f, 1.25f, 1.25f });
+	float4x4 cylTrans = float4x4::identity();
+	VertexProcessor::translate(cylTrans, { 2.0f, 0.25f, 1.0f });
+	VertexProcessor::scale(cylTrans, { 0.5f, 0.5f, 0.5f });
 
-	vp.model = modelMatrix;
+	float4x4 coneTrans = float4x4::identity();
+	VertexProcessor::translate(coneTrans, { -1.5f, -2.0f, 0.0f });
+	VertexProcessor::rotate(coneTrans, 180, { 1.0f, 0.0f, 0.0f });
+	VertexProcessor::scale(coneTrans, { 0.5f, 0.5f, 0.5f });
 
-	Color c1 = { 0.211f, 0.592f, 0.909f };
-	Color c0 = { 0.0f, 0.09f, 0.529f };
-	Color c2 = { 0.027f, 0.219f, 0.588f };
+	Mesh ramiel = Mesh::ramiel();
+	Mesh::c0 = {0.5f, 0.5f, 0.5f};
+	Mesh::c1 = { 0.4f, 0.4f, 0.4f };
+	Mesh::c2 = { 0.6f, 0.6f, 0.6f };
+	Mesh cone = Mesh::cone(1.0f, 1.0f, 16);
+	Mesh cyl = Mesh::cylinder(0.5f, 2.0f, 16, 4);
 	
-	Triangle tri0(
-		{ 0.0f, -1.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f },
-		{ 1.0f, 0.0f, 0.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri1(
-		{ 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f },
-		{ 0.0f, 1.0f, 0.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri2(
-		{ 0.0f, 1.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f },
-		{ -1.0f, 0.0f, 0.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri3(
-		{ -1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f },
-		{ 0.0f, -1.0f, 0.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri4(
-		{ 0.0f, -1.0f, 0.0f },
-		{ 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, -1.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri5(
-		{ 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f },
-		{ 0.0f, 0.0f, -1.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri6(
-		{ 0.0f, 1.0f, 0.0f },
-		{ -1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, -1.0f },
-		c0, c1, c2
-	);
-
-	Triangle tri7(
-		{ -1.0f, 0.0f, 0.0f },
-		{ 0.0f, -1.0f, 0.0f },
-		{ 0.0f, 0.0f, -1.0f },
-		c0, c1, c2
-	);
-	
-	img.clearColor(Color(0.0f, 0.0f, 0.0f, 0.0f));
-	img.draw(tri0);
-	img.draw(tri1);
-	img.draw(tri2);
-	img.draw(tri3);
-	img.draw(tri4);
-	img.draw(tri5);
-	img.draw(tri6);
-	img.draw(tri7);
+	img.clearColor(Color(0.427f, 0.537f, 0.666f, 1.0f));
+	vp.model = float4x4::identity();
+	ramiel.render(img);
+	vp.model = cylTrans;
+	cyl.render(img);
+	vp.model = coneTrans;
+	cone.render(img);
 
 	img.saveToFile("generated/xd.png");
 }
