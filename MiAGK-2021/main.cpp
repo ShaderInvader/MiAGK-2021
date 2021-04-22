@@ -27,14 +27,21 @@ int main(int argc, char* argv[])
 	VertexProcessor::rotate(coneTrans, 180, { 1.0f, 0.0f, 0.0f });
 	VertexProcessor::scale(coneTrans, { 0.5f, 0.5f, 0.5f });
 
+	float4x4 torusTrans = float4x4::identity();
+	VertexProcessor::rotate(torusTrans, 90, { 1.0f, 0.0f, 0.0f });
+	VertexProcessor::translate(torusTrans, { 0.0f, 0.0f, 1.0f });
+
 	Mesh ramiel = Mesh::ramiel();
 	Mesh::c0 = {0.5f, 0.5f, 0.5f};
 	Mesh::c1 = { 0.4f, 0.4f, 0.4f };
 	Mesh::c2 = { 0.6f, 0.6f, 0.6f };
 	Mesh cone = Mesh::cone(1.0f, 1.0f, 16);
 	Mesh cyl = Mesh::cylinder(0.5f, 2.0f, 16, 4);
+	Mesh torus = Mesh::torus(1.0f, 0.15f, 16, 8);
 	
 	img.clearColor(Color(0.427f, 0.537f, 0.666f, 1.0f));
+	vp.model = torusTrans;
+	torus.render(img);
 	vp.model = float4x4::identity();
 	ramiel.render(img);
 	vp.model = cylTrans;

@@ -21,6 +21,7 @@ public:
 private:
 	Mesh() = default;
 	explicit Mesh(int nTriangles);
-	static float3 pOnCircle(float angle, float radius, float3 center = {0.0f, 0.0f, 0.0f});
+	static float3 pOnCircleY(float angle, float radius, float3 center = {0.0f, 0.0f, 0.0f});
+	static float3 pOnTorus(float phi, float theta, float r1, float r2);
 	std::vector<Triangle> triangles;
 };

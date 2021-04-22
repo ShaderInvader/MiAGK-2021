@@ -18,8 +18,8 @@ Mesh Mesh::cone(float r, float h, int sides)
 	
 	for (float angle = 0.0f; angle < twoPi; angle += step)
 	{
-		float3 p0 = pOnCircle(angle, r);
-		float3 p1 = pOnCircle(angle + step, r);
+		float3 p0 = pOnCircleY(angle, r);
+		float3 p1 = pOnCircleY(angle + step, r);
 		mesh.triangles.emplace_back(p1, float3( 0.0f, h, 0.0f ), p0, c0, c1, c2);
 		mesh.triangles.emplace_back(p0, float3( 0.0f, 0.0f, 0.0f ), p1, c0, c1, c2);
 	}
@@ -38,20 +38,20 @@ Mesh Mesh::cylinder(float r, float h, int sides, int cuts)
 		for (int i = 0; i < cuts; ++i)
 		{
 			mesh.triangles.emplace_back(
-				pOnCircle(angle, r, float3(0.0f, rise * i, 0.0f)), 
-				pOnCircle(angle + step, r, float3(0.0f, rise * i, 0.0f)),
-				pOnCircle(angle, r, float3(0.0f, rise * (i + 1), 0.0f)),
+				pOnCircleY(angle, r, float3(0.0f, rise * i, 0.0f)), 
+				pOnCircleY(angle + step, r, float3(0.0f, rise * i, 0.0f)),
+				pOnCircleY(angle, r, float3(0.0f, rise * (i + 1), 0.0f)),
 				c0, c1, c2
 			);
 			mesh.triangles.emplace_back(
-				pOnCircle(angle, r, float3(0.0f, rise * (i + 1), 0.0f)),
-				pOnCircle(angle + step, r, float3(0.0f, rise * i, 0.0f)),
-				pOnCircle(angle + step, r, float3(0.0f, rise * (i + 1), 0.0f)),
+				pOnCircleY(angle, r, float3(0.0f, rise * (i + 1), 0.0f)),
+				pOnCircleY(angle + step, r, float3(0.0f, rise * i, 0.0f)),
+				pOnCircleY(angle + step, r, float3(0.0f, rise * (i + 1), 0.0f)),
 				c0, c1, c2
 			);
 		}
-		mesh.triangles.emplace_back(pOnCircle(angle, r), float3(0.0f, 0.0f, 0.0f), pOnCircle(angle + step, r), c0, c1, c2);
-		mesh.triangles.emplace_back(pOnCircle(angle, r), float3(0.0f, h, 0.0f), pOnCircle(angle + step, r), c0, c1, c2);
+		mesh.triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, 0.0f, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2);
+		mesh.triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, h, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2);
 	}
 
 	return mesh;
@@ -59,59 +59,38 @@ Mesh Mesh::cylinder(float r, float h, int sides, int cuts)
 
 Mesh Mesh::torus(float r1, float r2, int nSegs, int nSides)
 {
-	/*
-	std::vector<Vertex> vertices;
-	std::vector<int> indices;
+	Mesh mesh;
+	float segStep = twoPi / nSegs;
+	float sideStep = twoPi / nSides;
 
-	vertices.resize(((long long)nSegments + 1) * ((long long)nSides + 1));
+	float currTheta = 0.0f;
+	float nextTheta = segStep;
+	float currPhi = 0.0f;
+	float nextPhi = sideStep;
 
-	for (int seg = 0; seg <= nSegments; seg++)
+	for (int i = 0; i < nSegs; ++i)
 	{
-		int currSeg = seg == nSegments ? 0 : seg;
-
-		float t1 = static_cast<float>(currSeg) / nSegments * glm::two_pi<float>();
-		glm::vec3 r1(glm::cos(t1) * radius1, 0.0f, glm::sin(t1) * radius1);
-
-		for (int side = 0; side <= nSides; side++)
+		for (int j = 0; j < nSides; ++j)
 		{
-			int currSide = side == nSides ? 0 : side;
-
-			float t2 = (float)currSide / nSides * glm::two_pi<float>();
-			glm::vec3 r2(glm::angleAxis(-t1, glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec3(glm::sin(t2) * radius2, glm::cos(t2) * radius2, 0.0f));
-
-			vertices[(long long)side + (long long)seg * ((long long)nSides + 1)] = r1 + r2;
+			mesh.triangles.emplace_back(
+				pOnTorus(currPhi, currTheta, r1, r2),
+				pOnTorus(nextPhi, currTheta, r1, r2),
+				pOnTorus(currPhi, nextTheta, r1, r2)
+			);
+			mesh.triangles.emplace_back(
+				pOnTorus(currPhi, nextTheta, r1, r2),
+				pOnTorus(nextPhi, currTheta, r1, r2),
+				pOnTorus(nextPhi, nextTheta, r1, r2)
+			);
+			
+			currPhi += sideStep;
+			nextPhi += sideStep;
 		}
+		currTheta += segStep;
+		nextTheta += segStep;
 	}
-
-	int nFaces = vertices.size();
-	int nTriangles = nFaces * 2;
-	int nIndices = nTriangles * 3;
-	indices.resize(nIndices);
-
-	int i = 0;
-	for (int seg = 0; seg <= nSegments; seg++)
-	{
-		for (int side = 0; side <= nSides - 1; side++)
-		{
-			int current = side + seg * (nSides + 1);
-			int next = side + (seg < nSegments ? (seg + 1) * (nSides + 1) : 0);
-
-			if (i < nIndices - 6)
-			{
-				indices[i++] = current;
-				indices[i++] = next;
-				indices[i++] = next + 1;
-
-				indices[i++] = current;
-				indices[i++] = next + 1;
-				indices[i++] = current + 1;
-			}
-		}
-	}
-
-	Mesh* outMesh = new Mesh(vertices, indices, {});
-	return outMesh;*/
-	return Mesh(0);
+	
+	return mesh;
 }
 
 Mesh Mesh::ramiel()
@@ -186,9 +165,16 @@ Mesh::Mesh(int nTriangles)
 	triangles.reserve(nTriangles);
 }
 
-float3 Mesh::pOnCircle(float angle, float radius, float3 center)
+float3 Mesh::pOnCircleY(float angle, float radius, float3 center)
 {
 	return { radius * std::cos(angle) + center.x,
 			 center.y,
 			 radius * std::sin(angle) + center.z };
+}
+
+float3 Mesh::pOnTorus(float phi, float theta, float r1, float r2)
+{
+	return {std::cos(theta) * (r1 + std::cos(phi) * r2),
+			std::sin(theta) * (r1 + std::cos(phi) * r2),
+			std::sin(phi) * r2};
 }
