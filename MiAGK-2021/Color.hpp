@@ -3,6 +3,8 @@
 #include <string>
 #include <ostream>
 
+class float3;
+
 struct Color
 {
 	uint8_t r, g, b, a;
@@ -12,6 +14,7 @@ struct Color
 	Color(int r, int g, int b, int a);
 	Color(float r, float g, float b);
 	Color(float r, float g, float b, float a);
+	Color(const float3& vec);
 	
 	/// <summary>
 	/// A safe way of getting the 32 bit color representation

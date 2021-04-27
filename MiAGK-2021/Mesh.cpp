@@ -11,25 +11,25 @@ Color Mesh::c0 = { 1.0f, 0.0f, 0.0f };
 Color Mesh::c1 = { 0.0f, 1.0f, 0.0f };
 Color Mesh::c2 = { 0.0f, 0.0f, 1.0f };
 
-Mesh Mesh::cone(float r, float h, int sides)
+Mesh* Mesh::cone(float r, float h, int sides)
 {
-	Mesh mesh;
+	Mesh* mesh = new Mesh();
 	float step = (360.0f / static_cast<float>(sides)) * piOver180;
 	
 	for (float angle = 0.0f; angle < twoPi; angle += step)
 	{
 		float3 p0 = pOnCircleY(angle, r);
 		float3 p1 = pOnCircleY(angle + step, r);
-		mesh.triangles.emplace_back(p1, float3( 0.0f, h, 0.0f ), p0, c0, c1, c2);
-		mesh.triangles.emplace_back(p0, float3( 0.0f, 0.0f, 0.0f ), p1, c0, c1, c2);
+		mesh->triangles.emplace_back(p1, float3( 0.0f, h, 0.0f ), p0, c0, c1, c2, mesh);
+		mesh->triangles.emplace_back(p0, float3( 0.0f, 0.0f, 0.0f ), p1, c0, c1, c2, mesh);
 	}
 
 	return mesh;
 }
 
-Mesh Mesh::cylinder(float r, float h, int sides, int cuts)
+Mesh* Mesh::cylinder(float r, float h, int sides, int cuts)
 {
-	Mesh mesh;
+	Mesh* mesh = new Mesh();
 	float step = (360.0f / static_cast<float>(sides)) * piOver180;
 	float rise = h / static_cast<float>(cuts);
 
@@ -37,29 +37,31 @@ Mesh Mesh::cylinder(float r, float h, int sides, int cuts)
 	{
 		for (int i = 0; i < cuts; ++i)
 		{
-			mesh.triangles.emplace_back(
+			mesh->triangles.emplace_back(
 				pOnCircleY(angle, r, float3(0.0f, rise * i, 0.0f)), 
 				pOnCircleY(angle + step, r, float3(0.0f, rise * i, 0.0f)),
 				pOnCircleY(angle, r, float3(0.0f, rise * (i + 1), 0.0f)),
-				c0, c1, c2
+				c0, c1, c2,
+				mesh
 			);
-			mesh.triangles.emplace_back(
+			mesh->triangles.emplace_back(
 				pOnCircleY(angle, r, float3(0.0f, rise * (i + 1), 0.0f)),
 				pOnCircleY(angle + step, r, float3(0.0f, rise * i, 0.0f)),
 				pOnCircleY(angle + step, r, float3(0.0f, rise * (i + 1), 0.0f)),
-				c0, c1, c2
+				c0, c1, c2,
+				mesh
 			);
 		}
-		mesh.triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, 0.0f, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2);
-		mesh.triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, h, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2);
+		mesh->triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, 0.0f, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2, mesh);
+		mesh->triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, h, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2, mesh);
 	}
 
 	return mesh;
 }
 
-Mesh Mesh::torus(float r1, float r2, int nSegs, int nSides)
+Mesh* Mesh::torus(float r1, float r2, int nSegs, int nSides)
 {
-	Mesh mesh;
+	Mesh* mesh = new Mesh();
 	float segStep = twoPi / nSegs;
 	float sideStep = twoPi / nSides;
 
@@ -72,15 +74,17 @@ Mesh Mesh::torus(float r1, float r2, int nSegs, int nSides)
 	{
 		for (int j = 0; j < nSides; ++j)
 		{
-			mesh.triangles.emplace_back(
+			mesh->triangles.emplace_back(
 				pOnTorus(currPhi, currTheta, r1, r2),
 				pOnTorus(nextPhi, currTheta, r1, r2),
-				pOnTorus(currPhi, nextTheta, r1, r2)
+				pOnTorus(currPhi, nextTheta, r1, r2),
+				mesh
 			);
-			mesh.triangles.emplace_back(
+			mesh->triangles.emplace_back(
 				pOnTorus(currPhi, nextTheta, r1, r2),
 				pOnTorus(nextPhi, currTheta, r1, r2),
-				pOnTorus(nextPhi, nextTheta, r1, r2)
+				pOnTorus(nextPhi, nextTheta, r1, r2),
+				mesh
 			);
 			
 			currPhi += sideStep;
@@ -93,60 +97,68 @@ Mesh Mesh::torus(float r1, float r2, int nSegs, int nSides)
 	return mesh;
 }
 
-Mesh Mesh::ramiel()
+Mesh* Mesh::ramiel()
 {
 	Color c1 = { 0.211f, 0.592f, 0.909f };
 	Color c0 = { 0.0f, 0.09f, 0.529f };
 	Color c2 = { 0.027f, 0.219f, 0.588f };
 	
-	Mesh mesh;
-	mesh.triangles.emplace_back(
+	Mesh* mesh = new Mesh();
+	mesh->triangles.emplace_back(
 		float3( 0.0f, -1.0f, 0.0f),
 		float3( 0.0f, 0.0f, 1.0f ),
 		float3( 1.0f, 0.0f, 0.0f ),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(1.0f, 0.0f, 0.0f),
 		float3(0.0f, 0.0f, 1.0f),
 		float3(0.0f, 1.0f, 0.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(0.0f, 1.0f, 0.0f),
 		float3(0.0f, 0.0f, 1.0f),
 		float3(-1.0f, 0.0f, 0.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(-1.0f, 0.0f, 0.0f),
 		float3(0.0f, 0.0f, 1.0f),
 		float3(0.0f, -1.0f, 0.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(0.0f, -1.0f, 0.0f),
 		float3(1.0f, 0.0f, 0.0f),
 		float3(0.0f, 0.0f, -1.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(1.0f, 0.0f, 0.0f),
 		float3(0.0f, 1.0f, 0.0f),
 		float3(0.0f, 0.0f, -1.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(0.0f, 1.0f, 0.0f),
 		float3(-1.0f, 0.0f, 0.0f),
 		float3(0.0f, 0.0f, -1.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
-	mesh.triangles.emplace_back(
+	mesh->triangles.emplace_back(
 		float3(-1.0f, 0.0f, 0.0f),
 		float3(0.0f, -1.0f, 0.0f),
 		float3(0.0f, 0.0f, -1.0f),
-		c0, c1, c2
+		c0, c1, c2,
+		mesh
 	);
 
 	return mesh;

@@ -1,5 +1,7 @@
 #include "Color.hpp"
 
+#include "float3.hpp"
+
 Color::Color()
 {
 	r = g = b = 0;
@@ -26,6 +28,9 @@ Color::Color(float r, float g, float b, float a)
 	this->r = static_cast<uint8_t>(r * 255.0f);
 	this->a = static_cast<uint8_t>(a * 255.0f);
 }
+
+Color::Color(const float3& vec) : Color(vec.x, vec.y, vec.x, 1.0f)
+{}
 
 unsigned Color::getEncoded() const
 {

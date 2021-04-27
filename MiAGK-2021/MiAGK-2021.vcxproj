@@ -148,6 +148,8 @@
     <ClCompile Include="float4x4.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="PhongShader.cpp" />
+    <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="VertexProcessor.cpp" />
   </ItemGroup>
@@ -157,7 +159,11 @@
     <ClInclude Include="Buffer.hpp" />
     <ClInclude Include="float4.hpp" />
     <ClInclude Include="float4x4.hpp" />
+    <ClInclude Include="Light.hpp" />
+    <ClInclude Include="Material.hpp" />
     <ClInclude Include="Mesh.hpp" />
+    <ClInclude Include="PhongShader.hpp" />
+    <ClInclude Include="Shader.hpp" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="Triangle.hpp" />
     <ClInclude Include="Vertex.hpp" />

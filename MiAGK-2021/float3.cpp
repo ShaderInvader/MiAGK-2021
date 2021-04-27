@@ -81,7 +81,7 @@ void float3::normalize()
 
 float3 float3::normalized() const
 {
-	return float3(*this) / magnitude();
+	return *this / magnitude();
 }
 
 bool float3::isZero()

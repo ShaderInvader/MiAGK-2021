@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Material.hpp"
 #include "Triangle.hpp"
 
 class Buffer;
@@ -9,12 +10,14 @@ class Buffer;
 class Mesh
 {
 public:
+	Material* material;
+	
 	static Color c0, c1, c2;
 	
-	static Mesh cone(float r, float h, int sides);
-	static Mesh cylinder(float r, float h, int sides, int cuts);
-	static Mesh torus(float r1, float r2, int nSegs, int nSides);
-	static Mesh ramiel();
+	static Mesh* cone(float r, float h, int sides);
+	static Mesh* cylinder(float r, float h, int sides, int cuts);
+	static Mesh* torus(float r1, float r2, int nSegs, int nSides);
+	static Mesh* ramiel();
 
 	void render(Buffer& buffer);
 	
