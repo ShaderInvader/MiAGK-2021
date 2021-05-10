@@ -1,5 +1,7 @@
 #include "float3.hpp"
 
+
+#include <algorithm>
 #include <cmath>
 
 #include "float4.hpp"
@@ -66,7 +68,7 @@ float3 float3::Forward()
 
 float float3::magnitude() const
 {
-	return std::sqrtf(x * x + y * y + z * z);
+	return std::sqrt(x * x + y * y + z * z);
 }
 
 float float3::squareMagnitude() const
@@ -81,7 +83,7 @@ void float3::normalize()
 
 float3 float3::normalized() const
 {
-	return *this / magnitude();
+	return float3(x,y,z) / magnitude();
 }
 
 bool float3::isZero()
@@ -110,6 +112,15 @@ float3 float3::cross(const float3& v1, const float3& v2)
 		v1.z * v2.x - v1.x * v2.z,
 		v1.x * v2.y - v1.y * v2.x
 	};
+}
+
+float3 float3::clamp01()
+{
+	float3 output;
+	output.x = std::clamp(x, 0.0f, 1.0f);
+	output.y = std::clamp(y, 0.0f, 1.0f);
+	output.z = std::clamp(z, 0.0f, 1.0f);
+	return output;
 }
 
 float3 float3::operator+(const float3& v) const

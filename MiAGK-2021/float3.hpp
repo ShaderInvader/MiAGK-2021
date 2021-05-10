@@ -86,6 +86,8 @@ public:
 	/// </summary>
 	static float3 cross(const float3& v1, const float3& v2);
 
+	float3 clamp01();
+
 	/// <summary>
 	/// Compute sum of two vectors
 	/// </summary>

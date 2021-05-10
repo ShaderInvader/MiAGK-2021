@@ -20,12 +20,20 @@ float3 VertexProcessor::transformVertex(float4 vertex)
 	return vertex;
 }
 
+float3 VertexProcessor::transformNormal(float4 normal)
+{
+	normal = float4x4::mul(normal, model);
+	return normal;
+}
+
 void VertexProcessor::transformTriangle(Triangle& tri)
 {
 	tri.tv1.pos = transformVertex(float4(tri.v1.pos, 1.0f));
 	tri.tv2.pos = transformVertex(float4(tri.v2.pos, 1.0f));
 	tri.tv3.pos = transformVertex(float4(tri.v3.pos, 1.0f));
-	tri.generateNormals();
+	tri.tv1.norm = transformNormal(float4(tri.v1.norm, 0.0f)).normalized().clamp01();
+	tri.tv2.norm = transformNormal(float4(tri.v2.norm, 0.0f)).normalized().clamp01();
+	tri.tv3.norm = transformNormal(float4(tri.v3.norm, 0.0f)).normalized().clamp01();
 }
 
 float4x4 VertexProcessor::makePerspective(float fovy, float aspectRatio, float nearPlane, float farPlane)

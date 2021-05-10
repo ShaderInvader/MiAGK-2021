@@ -2,6 +2,7 @@
 
 #include "Buffer.hpp"
 #include "float4x4.hpp"
+#include "Light.hpp"
 #include "Mesh.hpp"
 #include "PhongShader.hpp"
 #include "Triangle.hpp"
@@ -32,9 +33,18 @@ int main(int argc, char* argv[])
 	VertexProcessor::rotate(torusTrans, 90, { 1.0f, 0.0f, 0.0f });
 	VertexProcessor::translate(torusTrans, { 0.0f, 0.0f, 1.0f });
 
+	float4x4 ramielTrans = float4x4::identity();
+	VertexProcessor::rotate(ramielTrans, 22, { 0.0f, 1.0f, 0.0f });
+	
 	PhongShader phongShader;
 	Material phongMat;
 	phongMat.shader = &phongShader;
+
+	Light directional;
+	directional.isDirectional = true;
+	directional.direction = float3(1.0f, 1.0f, 0.0f).normalized();
+	directional.diffuse = { 1.0f, 1.0f, 1.0f };
+	Light::sceneLights.push_back(directional);
 	
 	Mesh* ramiel = Mesh::ramiel();
 	ramiel->material = &phongMat;
