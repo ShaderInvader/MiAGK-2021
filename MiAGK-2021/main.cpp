@@ -45,6 +45,12 @@ int main(int argc, char* argv[])
 	directional.direction = float3(1.0f, 1.0f, 0.0f).normalized();
 	directional.diffuse = { 1.0f, 1.0f, 1.0f };
 	Light::sceneLights.push_back(directional);
+
+	Light point;
+	point.isDirectional = false;
+	point.position = { -2.0f, -2.0f, 0.0f };
+	point.diffuse = { 1.0f, 0.0f, 0.0f };
+	Light::sceneLights.push_back(point);
 	
 	Mesh* ramiel = Mesh::ramiel();
 	ramiel->material = &phongMat;

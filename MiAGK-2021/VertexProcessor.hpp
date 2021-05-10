@@ -9,6 +9,7 @@ public:
 
 	float3 transformVertex(float4 vertex);
 	float3 transformNormal(float4 normal);
+	Color gouraud(float4 position, float3 normal);
 	void transformTriangle(Triangle& tri);
 	
 	static float4x4 makePerspective(float fovy, float aspectRatio, float nearPlane, float farPlane);

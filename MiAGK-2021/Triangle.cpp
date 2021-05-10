@@ -100,11 +100,11 @@ void Triangle::generateNormals()
 	std::cout << tv1.pos - tv3.pos << "\n";
 	std::cout << float3::cross(tv1.pos - tv2.pos, tv1.pos - tv3.pos) << "\n";
 	std::cout << float3::cross(tv1.pos - tv2.pos, tv1.pos - tv3.pos).normalized() << "\n";*/
-	v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v1.pos).normalized().clamp01();
+	v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v1.pos).normalized();
 	/*v1.norm.normalize();
 	v2.norm.normalize();
 	v3.norm.normalize();*/
-	//v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v2.pos);
+	//v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v2.pos).normalized();
 	/*tv1.norm = float3::cross(tv1.pos - tv2.pos, tv1.pos - tv3.pos).normalized();
 	tv2.norm = float3::cross(tv2.pos - tv3.pos, tv2.pos - tv1.pos).normalized();
 	tv3.norm = float3::cross(tv3.pos - tv1.pos, tv3.pos - tv2.pos).normalized();*/

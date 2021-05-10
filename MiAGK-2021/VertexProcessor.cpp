@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+#include "Light.hpp"
+
 constexpr float PI = 3.14159265358979f;
 
 VertexProcessor::VertexProcessor()
@@ -26,14 +28,37 @@ float3 VertexProcessor::transformNormal(float4 normal)
 	return normal;
 }
 
+Color VertexProcessor::gouraud(float4 position, float3 normal)
+{
+	float3 diffuse = 0.0f;
+	float3 worldPos = float4x4::mul(position, model);
+	for (auto& light : Light::sceneLights)
+	{
+		float3 lightDir = 0.0f;
+		if (light.isDirectional)
+		{
+			lightDir = light.direction;
+		}
+		else
+		{
+			lightDir = (light.position - worldPos).normalized();
+		}
+		diffuse += std::max(float3::dot(lightDir, normal), 0.0f) * light.diffuse;
+	}
+	return diffuse.clamp01();
+}
+
 void VertexProcessor::transformTriangle(Triangle& tri)
 {
 	tri.tv1.pos = transformVertex(float4(tri.v1.pos, 1.0f));
 	tri.tv2.pos = transformVertex(float4(tri.v2.pos, 1.0f));
 	tri.tv3.pos = transformVertex(float4(tri.v3.pos, 1.0f));
-	tri.tv1.norm = transformNormal(float4(tri.v1.norm, 0.0f)).normalized().clamp01();
-	tri.tv2.norm = transformNormal(float4(tri.v2.norm, 0.0f)).normalized().clamp01();
-	tri.tv3.norm = transformNormal(float4(tri.v3.norm, 0.0f)).normalized().clamp01();
+	tri.tv1.norm = transformNormal(float4(tri.v1.norm, 0.0f)).normalized();
+	tri.tv2.norm = transformNormal(float4(tri.v2.norm, 0.0f)).normalized();
+	tri.tv3.norm = transformNormal(float4(tri.v3.norm, 0.0f)).normalized();
+	tri.tv1.col = gouraud(float4(tri.v1.pos, 1.0f), tri.tv1.norm);
+	tri.tv2.col = gouraud(float4(tri.v2.pos, 1.0f), tri.tv2.norm);
+	tri.tv3.col = gouraud(float4(tri.v3.pos, 1.0f), tri.tv3.norm);
 }
 
 float4x4 VertexProcessor::makePerspective(float fovy, float aspectRatio, float nearPlane, float farPlane)

@@ -12,7 +12,7 @@ struct Triangle
 	Triangle(float3 p1, float3 p2, float3 p3, Color c1, Color c2, Color c3, Mesh* mesh);
 
 	Vertex_NC v1, v2, v3;
-	Vertex_N tv1, tv2, tv3;
+	Vertex_NC tv1, tv2, tv3;
 
 	Mesh* mesh;
 	
