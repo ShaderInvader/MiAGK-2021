@@ -6,11 +6,18 @@
 
 constexpr float PI = 3.14159265358979f;
 
+VertexProcessor* VertexProcessor::instance = nullptr;
+
 VertexProcessor::VertexProcessor()
 {
 	model = float4x4::identity();
 	view = float4x4::identity();
 	projection = float4x4::identity();
+
+	if (instance == nullptr)
+	{
+		instance = this;
+	}
 }
 
 float3 VertexProcessor::transformVertex(float4 vertex)

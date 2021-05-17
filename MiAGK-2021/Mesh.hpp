@@ -19,6 +19,7 @@ public:
 	static Mesh* torus(float r1, float r2, int nSegs, int nSides);
 	static Mesh* ramiel();
 
+	void smoothNormals();
 	void render(Buffer& buffer);
 	
 private:
@@ -26,5 +27,6 @@ private:
 	explicit Mesh(int nTriangles);
 	static float3 pOnCircleY(float angle, float radius, float3 center = {0.0f, 0.0f, 0.0f});
 	static float3 pOnTorus(float phi, float theta, float r1, float r2);
+	std::vector<Vertex_NC*> findVertices(float3 position);
 	std::vector<Triangle> triangles;
 };

@@ -75,12 +75,7 @@ Color Triangle::rasterize(float x, float y, float& depth)
 
 		if (triDepth < depth)
 		{
-			//float3 normal = sampleNormal(barycentric);
-			//float3 normal = barycentric.x * tv1.norm + barycentric.y * tv2.norm + barycentric.z * tv3.norm;
-			float3 normal = tv1.norm;
-			/*normal.y = 0.0f;
-			normal.z = 0.0f;*/
-			//outputColor = (v1.col * barycentric.x) + (v2.col * barycentric.y) + (v3.col * barycentric.z);
+			float3 normal = sampleNormal(barycentric);
 			outputColor = mesh->material->shader->sample(this, barycentric, normal);
 			depth = triDepth;
 		}
@@ -91,23 +86,12 @@ Color Triangle::rasterize(float x, float y, float& depth)
 
 float3 Triangle::sampleNormal(float3 barycentric)
 {
-	return barycentric.x * v1.norm + barycentric.y * v2.norm + barycentric.z * v3.norm;
+	return barycentric.x * tv1.norm + barycentric.y * tv2.norm + barycentric.z * tv3.norm;
 }
 
 void Triangle::generateNormals()
 {
-	/*std::cout << tv1.pos - tv2.pos << "\n";
-	std::cout << tv1.pos - tv3.pos << "\n";
-	std::cout << float3::cross(tv1.pos - tv2.pos, tv1.pos - tv3.pos) << "\n";
-	std::cout << float3::cross(tv1.pos - tv2.pos, tv1.pos - tv3.pos).normalized() << "\n";*/
 	v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v1.pos).normalized();
-	/*v1.norm.normalize();
-	v2.norm.normalize();
-	v3.norm.normalize();*/
-	//v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v2.pos).normalized();
-	/*tv1.norm = float3::cross(tv1.pos - tv2.pos, tv1.pos - tv3.pos).normalized();
-	tv2.norm = float3::cross(tv2.pos - tv3.pos, tv2.pos - tv1.pos).normalized();
-	tv3.norm = float3::cross(tv3.pos - tv1.pos, tv3.pos - tv2.pos).normalized();*/
 }
 
 void Triangle::calculateBounds(float3& min, float3& max) const

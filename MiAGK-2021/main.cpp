@@ -42,26 +42,26 @@ int main(int argc, char* argv[])
 
 	Light directional;
 	directional.isDirectional = true;
-	directional.direction = float3(1.0f, 1.0f, 0.0f).normalized();
+	directional.direction = float3(1.0f, 1.0f, -1.0f).normalized();
 	directional.diffuse = { 1.0f, 1.0f, 1.0f };
 	Light::sceneLights.push_back(directional);
 
 	Light point;
 	point.isDirectional = false;
-	point.position = { -2.0f, -2.0f, 0.0f };
+	point.position = { 0.0f, 1.5f, 0.0f };
 	point.diffuse = { 1.0f, 0.0f, 0.0f };
 	Light::sceneLights.push_back(point);
 	
 	Mesh* ramiel = Mesh::ramiel();
 	ramiel->material = &phongMat;
-	Mesh::c0 = {0.5f, 0.5f, 0.5f};
+	Mesh::c0 = { 0.5f, 0.5f, 0.5f };
 	Mesh::c1 = { 0.4f, 0.4f, 0.4f };
 	Mesh::c2 = { 0.6f, 0.6f, 0.6f };
-	Mesh* cone = Mesh::cone(1.0f, 1.0f, 16);
+	Mesh* cone = Mesh::cone(1.0f, 1.0f, 32);
 	cone->material = &phongMat;
-	Mesh* cyl = Mesh::cylinder(0.5f, 2.0f, 16, 4);
+	Mesh* cyl = Mesh::cylinder(0.5f, 2.0f, 32, 4);
 	cyl->material = &phongMat;
-	Mesh* torus = Mesh::torus(1.0f, 0.15f, 16, 8);
+	Mesh* torus = Mesh::torus(1.0f, 0.15f, 32, 16);
 	torus->material = &phongMat;
 	
 	img.clearColor(Color(0.427f, 0.537f, 0.666f, 1.0f));

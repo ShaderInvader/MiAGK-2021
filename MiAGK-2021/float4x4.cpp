@@ -55,7 +55,7 @@ float4x4 float4x4::mul(float v, const float4x4& a)
 	return mat;
 }
 
-float4 float4x4::mul(float4& a, float4x4& b)
+float4 float4x4::mul(float4 a, float4x4& b)
 {
 	float4 vec;
 	for (int k = 0; k < 4; ++k)

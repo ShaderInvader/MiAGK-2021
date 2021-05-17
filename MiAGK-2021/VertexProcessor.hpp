@@ -7,6 +7,8 @@ class VertexProcessor
 public:
 	VertexProcessor();
 
+	static VertexProcessor* instance;
+	
 	float3 transformVertex(float4 vertex);
 	float3 transformNormal(float4 normal);
 	Color gouraud(float4 position, float3 normal);

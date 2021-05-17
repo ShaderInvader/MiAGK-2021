@@ -23,7 +23,7 @@ Mesh* Mesh::cone(float r, float h, int sides)
 		mesh->triangles.emplace_back(p1, float3( 0.0f, h, 0.0f ), p0, c0, c1, c2, mesh);
 		mesh->triangles.emplace_back(p0, float3( 0.0f, 0.0f, 0.0f ), p1, c0, c1, c2, mesh);
 	}
-
+	mesh->smoothNormals();
 	return mesh;
 }
 
@@ -55,7 +55,7 @@ Mesh* Mesh::cylinder(float r, float h, int sides, int cuts)
 		mesh->triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, 0.0f, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2, mesh);
 		mesh->triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, h, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2, mesh);
 	}
-
+	mesh->smoothNormals();
 	return mesh;
 }
 
@@ -93,7 +93,7 @@ Mesh* Mesh::torus(float r1, float r2, int nSegs, int nSides)
 		currTheta += segStep;
 		nextTheta += segStep;
 	}
-	
+	mesh->smoothNormals();
 	return mesh;
 }
 
@@ -164,6 +164,33 @@ Mesh* Mesh::ramiel()
 	return mesh;
 }
 
+void Mesh::smoothNormals()
+{
+	for (auto& triangle : triangles)
+	{
+		auto foundVertices = findVertices(triangle.v1.pos);
+		for (auto && foundVertex : foundVertices)
+		{
+			triangle.v1.norm += foundVertex->norm;
+		}
+		triangle.v1.norm.normalize();
+
+		foundVertices = findVertices(triangle.v2.pos);
+		for (auto&& foundVertex : foundVertices)
+		{
+			triangle.v2.norm += foundVertex->norm;
+		}
+		triangle.v2.norm.normalize();
+
+		foundVertices = findVertices(triangle.v3.pos);
+		for (auto&& foundVertex : foundVertices)
+		{
+			triangle.v3.norm += foundVertex->norm;
+		}
+		triangle.v3.norm.normalize();
+	}
+}
+
 void Mesh::render(Buffer& buffer)
 {
 	for (auto triangle : triangles)
@@ -189,4 +216,27 @@ float3 Mesh::pOnTorus(float phi, float theta, float r1, float r2)
 	return {std::cos(theta) * (r1 + std::cos(phi) * r2),
 			std::sin(theta) * (r1 + std::cos(phi) * r2),
 			std::sin(phi) * r2};
+}
+
+std::vector<Vertex_NC*> Mesh::findVertices(float3 position)
+{
+	std::vector<Vertex_NC*> foundVertices;
+	constexpr float delta = 0.001f;
+	
+	for (auto && triangle : triangles)
+	{
+		if (std::abs(triangle.v1.pos.x - position.x) < delta && std::abs(triangle.v1.pos.y - position.y) < delta && std::abs(triangle.v1.pos.z - position.z) < delta)
+		{
+			foundVertices.push_back(&triangle.v1);
+		}
+		if (std::abs(triangle.v2.pos.x - position.x) < delta && std::abs(triangle.v2.pos.y - position.y) < delta && std::abs(triangle.v2.pos.z - position.z) < delta)
+		{
+			foundVertices.push_back(&triangle.v2);
+		}
+		if (std::abs(triangle.v3.pos.x - position.x) < delta && std::abs(triangle.v3.pos.y - position.y) < delta && std::abs(triangle.v3.pos.z - position.z) < delta)
+		{
+			foundVertices.push_back(&triangle.v3);
+		}
+	}
+	return foundVertices;
 }

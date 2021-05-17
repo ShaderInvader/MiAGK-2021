@@ -11,7 +11,7 @@ public:
 	
 	static float4x4 mul(float4x4& a, float4x4& b);
 	static float4x4 mul(float v, const float4x4& a);
-	static float4 mul(float4& a, float4x4& b);
+	static float4 mul(float4 a, float4x4& b);
 
 	float4& operator[](int i);
 
