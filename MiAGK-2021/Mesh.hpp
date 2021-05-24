@@ -13,7 +13,8 @@ public:
 	Material* material;
 	
 	static Color c0, c1, c2;
-	
+
+	static Mesh* triangle(float3 p1, float3 p2, float3 p3);
 	static Mesh* cone(float r, float h, int sides);
 	static Mesh* cylinder(float r, float h, int sides, int cuts);
 	static Mesh* torus(float r1, float r2, int nSegs, int nSides);

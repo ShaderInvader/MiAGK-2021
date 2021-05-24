@@ -1,11 +1,8 @@
-#include <iostream>
-
 #include "Buffer.hpp"
 #include "float4x4.hpp"
 #include "Light.hpp"
 #include "Mesh.hpp"
 #include "PhongShader.hpp"
-#include "Triangle.hpp"
 #include "VertexProcessor.hpp"
 
 constexpr int WINDOW_HEIGHT = 1920;
@@ -15,7 +12,6 @@ int main(int argc, char* argv[])
 {
 	VertexProcessor vp;
 	vp.projection = VertexProcessor::makePerspective(80, (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.01f, 100.0f);
-	//vp.view = VertexProcessor::lookAt({ 0.5f, -0.5f, 2.5f }, { 0.75f, -0.75f, 0.5f }, float3::Up());
 	vp.view = VertexProcessor::lookAt({ 0.0f, -0.3f, 2.5f }, { 0.0f, -0.5f, 0.0f }, float3::Up());
 	Buffer img(WINDOW_WIDTH, WINDOW_HEIGHT);
 	img.vp = &vp;
@@ -25,13 +21,12 @@ int main(int argc, char* argv[])
 	VertexProcessor::scale(cylTrans, { 0.5f, 0.5f, 0.5f });
 
 	float4x4 coneTrans = float4x4::identity();
-	VertexProcessor::translate(coneTrans, { -1.5f, -2.0f, 0.0f });
-	VertexProcessor::rotate(coneTrans, 180, { 1.0f, 0.0f, 0.0f });
+	VertexProcessor::translate(coneTrans, { -1.5f, 2.0f, 0.0f });
 	VertexProcessor::scale(coneTrans, { 0.5f, 0.5f, 0.5f });
 
 	float4x4 torusTrans = float4x4::identity();
-	VertexProcessor::rotate(torusTrans, 90, { 1.0f, 0.0f, 0.0f });
 	VertexProcessor::translate(torusTrans, { 0.0f, 0.0f, 1.0f });
+	VertexProcessor::rotate(torusTrans, 90, { 1.0f, 0.0f, 0.0f });
 
 	float4x4 ramielTrans = float4x4::identity();
 	VertexProcessor::rotate(ramielTrans, 22, { 0.0f, 1.0f, 0.0f });
@@ -42,13 +37,13 @@ int main(int argc, char* argv[])
 
 	Light directional;
 	directional.isDirectional = true;
-	directional.direction = float3(1.0f, 1.0f, -1.0f).normalized();
-	directional.diffuse = { 1.0f, 1.0f, 1.0f };
+	directional.direction = float3(-1.0f, -1.0f, 0.25f).normalized();
+	directional.diffuse = { 0.0f, 0.0f, 1.0f };
 	Light::sceneLights.push_back(directional);
 
 	Light point;
 	point.isDirectional = false;
-	point.position = { 0.0f, 1.5f, 0.0f };
+	point.position = { 3.0f, 3.0f, 1.0f };
 	point.diffuse = { 1.0f, 0.0f, 0.0f };
 	Light::sceneLights.push_back(point);
 	
@@ -61,10 +56,18 @@ int main(int argc, char* argv[])
 	cone->material = &phongMat;
 	Mesh* cyl = Mesh::cylinder(0.5f, 2.0f, 32, 4);
 	cyl->material = &phongMat;
-	Mesh* torus = Mesh::torus(1.0f, 0.15f, 32, 16);
+	Mesh* torus = Mesh::torus(1.0f, 0.15f, 24, 16);
 	torus->material = &phongMat;
+
+	//Mesh* triangle = Mesh::triangle(
+	//	{-0.1f, -1.0f, -1.0f},
+	//	{0.0f, 1.0f, 0.0f},
+	//	{0.1f, -1.0f, 1.0f}
+	//);
+	//triangle->material = &phongMat;
 	
 	img.clearColor(Color(0.427f, 0.537f, 0.666f, 1.0f));
+	//vp.model = float4x4::identity();
 	vp.model = torusTrans;
 	torus->render(img);
 	vp.model = float4x4::identity();
@@ -73,6 +76,8 @@ int main(int argc, char* argv[])
 	cyl->render(img);
 	vp.model = coneTrans;
 	cone->render(img);
+	/*vp.model = float4x4::identity();
+	triangle->render(img);*/
 
 	img.saveToFile("generated/xd.png");
 

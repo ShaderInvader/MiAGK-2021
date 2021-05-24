@@ -101,7 +101,7 @@ void Buffer::draw(Triangle& tri)
 		{
 			int index = y * height + x;
 			Color outColor = tri.rasterize(pixelsToCanonical(x, width), pixelsToCanonical(y, height), this->depth[index]);
-			if (outColor.a > 0.01f)
+			if (outColor.a > 0.0001f)
 			{
 				this->pixels[index] = outColor;
 			}

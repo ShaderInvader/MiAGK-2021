@@ -1,7 +1,4 @@
 #include "Triangle.hpp"
-
-#include <iostream>
-
 #include "Mesh.hpp"
 #include "Shader.hpp"
 
@@ -91,7 +88,7 @@ float3 Triangle::sampleNormal(float3 barycentric)
 
 void Triangle::generateNormals()
 {
-	v1.norm = v2.norm = v3.norm = float3::cross(v2.pos - v1.pos, v3.pos - v1.pos).normalized();
+	tv1.norm = tv2.norm = tv3.norm = v1.norm = v2.norm = v3.norm = float3::cross(v3.pos - v1.pos, v2.pos - v1.pos).normalized();
 }
 
 void Triangle::calculateBounds(float3& min, float3& max) const

@@ -3,6 +3,7 @@
 #include <ostream>
 #include <string>
 
+struct Color;
 class float4;
 
 class float3
@@ -37,6 +38,8 @@ public:
 
 	float3(float4 vector);
 
+	float3(Color color);
+
 	static float3 Zero();
 	static float3 One();
 	static float3 Up();
@@ -69,7 +72,7 @@ public:
 	/// <summary>
 	/// Check if all components are equal zero
 	/// </summary>
-	bool isZero();
+	bool isZero() const;
 
 	/// <summary>
 	/// Create std::string from given vector in format "[ {x}, {y}, {z} ]"

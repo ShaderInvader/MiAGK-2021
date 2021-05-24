@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cmath>
 
+
+#include "Color.hpp"
 #include "float4.hpp"
 
 float3::float3()
@@ -39,6 +41,14 @@ float3::float3(float4 vector)
 	x = vector.x;
 	y = vector.y;
 	z = vector.z;
+}
+
+float3::float3(Color color)
+{
+	constexpr float div = 1.0f / 255.0f;
+	x = color.r * div;
+	y = color.g * div;
+	z = color.b * div;
 }
 
 float3 float3::Zero()
@@ -78,15 +88,19 @@ float float3::squareMagnitude() const
 
 void float3::normalize()
 {
-	*this /= magnitude();
+	if (!isZero())
+		*this /= magnitude();
 }
 
 float3 float3::normalized() const
 {
-	return float3(x,y,z) / magnitude();
+	if (!isZero())
+		return float3(x, y, z) / magnitude();
+	else
+		return float3(0.0f);
 }
 
-bool float3::isZero()
+bool float3::isZero() const
 {
 	return std::fpclassify(x) == FP_ZERO
 		&& std::fpclassify(y) == FP_ZERO

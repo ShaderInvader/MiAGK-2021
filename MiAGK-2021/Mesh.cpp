@@ -11,6 +11,14 @@ Color Mesh::c0 = { 1.0f, 0.0f, 0.0f };
 Color Mesh::c1 = { 0.0f, 1.0f, 0.0f };
 Color Mesh::c2 = { 0.0f, 0.0f, 1.0f };
 
+Mesh* Mesh::triangle(float3 p1, float3 p2, float3 p3)
+{
+	Mesh* mesh = new Mesh(1);
+	mesh->triangles.emplace_back(p1, p2, p3, mesh);
+
+	return mesh;
+}
+
 Mesh* Mesh::cone(float r, float h, int sides)
 {
 	Mesh* mesh = new Mesh();
@@ -20,10 +28,11 @@ Mesh* Mesh::cone(float r, float h, int sides)
 	{
 		float3 p0 = pOnCircleY(angle, r);
 		float3 p1 = pOnCircleY(angle + step, r);
-		mesh->triangles.emplace_back(p1, float3( 0.0f, h, 0.0f ), p0, c0, c1, c2, mesh);
-		mesh->triangles.emplace_back(p0, float3( 0.0f, 0.0f, 0.0f ), p1, c0, c1, c2, mesh);
+		mesh->triangles.emplace_back(p0, float3( 0.0f, -h, 0.0f ), p1, c0, c1, c2, mesh);
+		mesh->triangles.emplace_back(p1, float3( 0.0f, 0.0f, 0.0f ), p0, c0, c1, c2, mesh);
 	}
-	mesh->smoothNormals();
+	// This naive method of smooth normals generation is too aggressive for cone
+	//mesh->smoothNormals();
 	return mesh;
 }
 
@@ -53,7 +62,7 @@ Mesh* Mesh::cylinder(float r, float h, int sides, int cuts)
 			);
 		}
 		mesh->triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, 0.0f, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2, mesh);
-		mesh->triangles.emplace_back(pOnCircleY(angle, r), float3(0.0f, h, 0.0f), pOnCircleY(angle + step, r), c0, c1, c2, mesh);
+		mesh->triangles.emplace_back(pOnCircleY(angle + step, r, { 0.0f, h, 0.0f }), float3(0.0f, h, 0.0f), pOnCircleY(angle, r, { 0.0f, h, 0.0f }), c0, c1, c2, mesh);
 	}
 	mesh->smoothNormals();
 	return mesh;
@@ -166,28 +175,29 @@ Mesh* Mesh::ramiel()
 
 void Mesh::smoothNormals()
 {
+	// This is also a one huge ugly hack
 	for (auto& triangle : triangles)
 	{
 		auto foundVertices = findVertices(triangle.v1.pos);
 		for (auto && foundVertex : foundVertices)
 		{
-			triangle.v1.norm += foundVertex->norm;
+			triangle.tv1.norm += foundVertex->norm;
 		}
-		triangle.v1.norm.normalize();
+		triangle.tv1.norm.normalize();
 
 		foundVertices = findVertices(triangle.v2.pos);
 		for (auto&& foundVertex : foundVertices)
 		{
-			triangle.v2.norm += foundVertex->norm;
+			triangle.tv2.norm += foundVertex->norm;
 		}
-		triangle.v2.norm.normalize();
+		triangle.tv2.norm.normalize();
 
 		foundVertices = findVertices(triangle.v3.pos);
 		for (auto&& foundVertex : foundVertices)
 		{
-			triangle.v3.norm += foundVertex->norm;
+			triangle.tv3.norm += foundVertex->norm;
 		}
-		triangle.v3.norm.normalize();
+		triangle.tv3.norm.normalize();
 	}
 }
 
@@ -221,7 +231,7 @@ float3 Mesh::pOnTorus(float phi, float theta, float r1, float r2)
 std::vector<Vertex_NC*> Mesh::findVertices(float3 position)
 {
 	std::vector<Vertex_NC*> foundVertices;
-	constexpr float delta = 0.001f;
+	constexpr float delta = 0.0001f;
 	
 	for (auto && triangle : triangles)
 	{
