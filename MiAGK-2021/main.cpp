@@ -1,5 +1,6 @@
 #include "Buffer.hpp"
 #include "float4x4.hpp"
+#include "GouraudShader.hpp"
 #include "Light.hpp"
 #include "Mesh.hpp"
 #include "PhongShader.hpp"
@@ -28,12 +29,20 @@ int main(int argc, char* argv[])
 	VertexProcessor::translate(torusTrans, { 0.0f, 0.0f, 1.0f });
 	VertexProcessor::rotate(torusTrans, 90, { 1.0f, 0.0f, 0.0f });
 
+	float4x4 torusTrans2 = float4x4::identity();
+	VertexProcessor::translate(torusTrans2, { 0.0f, 0.0f, 0.75f });
+	VertexProcessor::rotate(torusTrans2, 90, { 1.0f, 0.0f, 0.0f });
+
 	float4x4 ramielTrans = float4x4::identity();
 	VertexProcessor::rotate(ramielTrans, 22, { 0.0f, 1.0f, 0.0f });
 	
 	PhongShader phongShader;
 	Material phongMat;
 	phongMat.shader = &phongShader;
+
+	GouraudShader gouraudShader;
+	Material gouraudMat;
+	gouraudMat.shader = &gouraudShader;
 
 	Light directional;
 	directional.isDirectional = true;
@@ -56,8 +65,10 @@ int main(int argc, char* argv[])
 	cone->material = &phongMat;
 	Mesh* cyl = Mesh::cylinder(0.5f, 2.0f, 32, 4);
 	cyl->material = &phongMat;
-	Mesh* torus = Mesh::torus(1.0f, 0.15f, 24, 16);
+	Mesh* torus = Mesh::torus(1.0f, 0.15f, 16, 8);
 	torus->material = &phongMat;
+	Mesh* torus2 = Mesh::torus(1.0f, 0.15f, 16, 8);
+	torus2->material = &gouraudMat;
 
 	//Mesh* triangle = Mesh::triangle(
 	//	{-0.1f, -1.0f, -1.0f},
@@ -70,6 +81,8 @@ int main(int argc, char* argv[])
 	//vp.model = float4x4::identity();
 	vp.model = torusTrans;
 	torus->render(img);
+	vp.model = torusTrans2;
+	torus2->render(img);
 	vp.model = float4x4::identity();
 	ramiel->render(img);
 	vp.model = cylTrans;
