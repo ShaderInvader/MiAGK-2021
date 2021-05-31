@@ -1,15 +1,17 @@
 #include "Buffer.hpp"
 #include <algorithm>
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <iostream>
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "stb_image.h"
 
 Buffer::Buffer(unsigned width, unsigned height)
 {
 	this->width = width;
 	this->height = height;
+	channels = 4;
 	this->pixels = new Color[width * height];
 	this->depth = new float[width * height];
 	for (int i = 0; i < width * height; ++i)
@@ -22,6 +24,7 @@ Buffer::Buffer(Buffer& buffer)
 {
 	width = buffer.width;
 	height = buffer.height;
+	channels = buffer.channels;
 	pixels = new Color[width * height];
 	for (int i = 0; i < width * height; ++i)
 	{
@@ -32,6 +35,38 @@ Buffer::Buffer(Buffer& buffer)
 	{
 		depth[i] = buffer.getDepth(i);
 	}
+}
+
+Buffer::Buffer(std::string filePath)
+{
+    unsigned char *data = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+
+	pixels = new Color[width * height];
+	depth = nullptr;
+
+	const int range = width * height;
+	for (int i = 0, j = 0; j < range; i += channels, ++j)
+	{
+		switch (channels)
+		{
+		case 1:
+			pixels[j] = Color(static_cast<int>(data[i]), static_cast<int>(data[i]), static_cast<int>(data[i]));
+			break;
+		case 2:
+			pixels[j] = Color(static_cast<int>(data[i]), static_cast<int>(data[i]), static_cast<int>(data[i]), data[i + 1]);
+			break;
+		case 3:
+			pixels[j] = Color(static_cast<int>(data[i]), static_cast<int>(data[i + 1]), static_cast<int>(data[i + 2]));
+			break;
+		case 4:
+			pixels[j] = Color(static_cast<int>(data[i]), data[i + 1], data[i + 2], data[i + 3]);
+			break;
+		default:
+			break;
+		}
+	}
+
+	stbi_image_free(data);
 }
 
 void Buffer::setPixel(float x, float y, Color color) const
@@ -59,6 +94,11 @@ Color Buffer::getPixel(int x, int y) const
 	return pixels[calculateIndex(x, y)];
 }
 
+Color Buffer::getPixel(float x, float y) const
+{
+	return pixels[calculateIndex((int)std::floor(x * width), (int)std::floor(y * height))];
+}
+
 float Buffer::getDepth(int x, int y) const
 {
 	return depth[calculateIndex(x, y)];
@@ -79,7 +119,7 @@ void Buffer::clearColor(Color color) const
 
 void Buffer::saveToFile(std::string path) const
 {
-	stbi_write_png(path.c_str(), width, height, 4, pixels, height * 4 * sizeof(uint8_t));
+	stbi_write_png(path.c_str(), width, height, channels, pixels, width * channels * sizeof(uint8_t));
 }
 
 void Buffer::draw(Triangle& tri)

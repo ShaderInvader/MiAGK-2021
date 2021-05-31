@@ -1,9 +1,10 @@
 #include "Buffer.hpp"
 #include "float4x4.hpp"
-#include "GouraudShader.hpp"
 #include "Light.hpp"
 #include "Mesh.hpp"
+#include "GouraudShader.hpp"
 #include "PhongShader.hpp"
+#include "TexturedShader.hpp"
 #include "VertexProcessor.hpp"
 
 constexpr int WINDOW_HEIGHT = 1920;
@@ -17,6 +18,10 @@ int main(int argc, char* argv[])
 	Buffer img(WINDOW_WIDTH, WINDOW_HEIGHT);
 	img.vp = &vp;
 
+	// Textures
+	Buffer testTex("res/voltas.png");
+	testTex.saveToFile("generated/textureTest.png");
+	
 	float4x4 cylTrans = float4x4::identity();
 	VertexProcessor::translate(cylTrans, { 2.0f, 0.25f, 1.0f });
 	VertexProcessor::scale(cylTrans, { 0.5f, 0.5f, 0.5f });
@@ -44,6 +49,11 @@ int main(int argc, char* argv[])
 	Material gouraudMat;
 	gouraudMat.shader = &gouraudShader;
 
+	TexturedShader texturedShader;
+	Material texturedMat;
+	texturedMat.shader = &texturedShader;
+	texturedShader.mainTex = &testTex;
+
 	Light directional;
 	directional.isDirectional = true;
 	directional.direction = float3(-1.0f, -1.0f, 0.25f).normalized();
@@ -57,18 +67,18 @@ int main(int argc, char* argv[])
 	Light::sceneLights.push_back(point);
 	
 	Mesh* ramiel = Mesh::ramiel();
-	ramiel->material = &phongMat;
+	ramiel->material = &texturedMat;
 	Mesh::c0 = { 0.5f, 0.5f, 0.5f };
 	Mesh::c1 = { 0.4f, 0.4f, 0.4f };
 	Mesh::c2 = { 0.6f, 0.6f, 0.6f };
 	Mesh* cone = Mesh::cone(1.0f, 1.0f, 32);
-	cone->material = &phongMat;
+	cone->material = &texturedMat;
 	Mesh* cyl = Mesh::cylinder(0.5f, 2.0f, 32, 4);
-	cyl->material = &phongMat;
+	cyl->material = &texturedMat;
 	Mesh* torus = Mesh::torus(1.0f, 0.15f, 16, 8);
-	torus->material = &phongMat;
+	torus->material = &texturedMat;
 	Mesh* torus2 = Mesh::torus(1.0f, 0.15f, 16, 8);
-	torus2->material = &gouraudMat;
+	torus2->material = &texturedMat;
 
 	//Mesh* triangle = Mesh::triangle(
 	//	{-0.1f, -1.0f, -1.0f},

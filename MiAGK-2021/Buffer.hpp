@@ -18,6 +18,11 @@ public:
 	/// </summary>
 	/// <param name="buffer">The buffer to copy</param>
 	Buffer(Buffer& buffer);
+	/// <summary>
+	/// Creates a buffer from file
+	/// </summary>
+	/// <param name="filePath">Path to the source file</param>
+	explicit Buffer(std::string filePath);
 
 	/// <summary>
 	/// Sets a specified pixel color
@@ -62,6 +67,12 @@ public:
 	/// <param name="y">Y pixel coordinate [0; height]</param>
 	[[nodiscard]] Color getPixel(int x, int y) const;
 	/// <summary>
+	/// Get a specific pixel from the buffer
+	/// </summary>
+	/// <param name="x">X pixel coordinate [0; 1]</param>
+	/// <param name="y">Y pixel coordinate [0; 1]</param>
+	[[nodiscard]] Color getPixel(float x, float y) const;
+	/// <summary>
 	/// Get a specific pixel depth buffer value
 	/// </summary>
 	/// <param name="x">X pixel coordinate [0; width]</param>
@@ -94,7 +105,7 @@ private:
 	static float canonicalToNormalized(float canonical);
 	static float normalizedToCanonical(float normalized);
 	
-	int width, height;
+	int width, height, channels;
 	Color* pixels;
 	float* depth;
 };
