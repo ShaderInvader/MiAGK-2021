@@ -5,6 +5,7 @@
 #include "GouraudShader.hpp"
 #include "PhongShader.hpp"
 #include "TexturedShader.hpp"
+#include "TexturedLitShader.hpp"
 #include "VertexProcessor.hpp"
 
 constexpr int WINDOW_HEIGHT = 1920;
@@ -19,8 +20,8 @@ int main(int argc, char* argv[])
 	img.vp = &vp;
 
 	// Textures
-	Buffer testTex("res/voltas.png");
-	testTex.saveToFile("generated/textureTest.png");
+	Buffer tex0("res/voltas.png");
+	Buffer tex1("res/tex.png");
 	
 	float4x4 cylTrans = float4x4::identity();
 	VertexProcessor::translate(cylTrans, { 2.0f, 0.25f, 1.0f });
@@ -52,7 +53,13 @@ int main(int argc, char* argv[])
 	TexturedShader texturedShader;
 	Material texturedMat;
 	texturedMat.shader = &texturedShader;
-	texturedShader.mainTex = &testTex;
+	texturedShader.mainTex = &tex1;
+
+	TexturedLitShader texLitShader;
+	Material texLitMat;
+	texLitMat.shader = &texLitShader;
+	texLitShader.mainTex = &tex1;
+	
 
 	Light directional;
 	directional.isDirectional = true;
@@ -74,11 +81,11 @@ int main(int argc, char* argv[])
 	Mesh* cone = Mesh::cone(1.0f, 1.0f, 32);
 	cone->material = &texturedMat;
 	Mesh* cyl = Mesh::cylinder(0.5f, 2.0f, 32, 4);
-	cyl->material = &texturedMat;
+	cyl->material = &texLitMat;
 	Mesh* torus = Mesh::torus(1.0f, 0.15f, 16, 8);
-	torus->material = &texturedMat;
+	torus->material = &texLitMat;
 	Mesh* torus2 = Mesh::torus(1.0f, 0.15f, 16, 8);
-	torus2->material = &texturedMat;
+	torus2->material = &texLitMat;
 
 	//Mesh* triangle = Mesh::triangle(
 	//	{-0.1f, -1.0f, -1.0f},
@@ -89,16 +96,17 @@ int main(int argc, char* argv[])
 	
 	img.clearColor(Color(0.427f, 0.537f, 0.666f, 1.0f));
 	//vp.model = float4x4::identity();
-	vp.model = torusTrans;
-	torus->render(img);
-	vp.model = torusTrans2;
-	torus2->render(img);
 	vp.model = float4x4::identity();
 	ramiel->render(img);
 	vp.model = cylTrans;
 	cyl->render(img);
 	vp.model = coneTrans;
 	cone->render(img);
+	vp.model = torusTrans;
+	torus->render(img);
+	texLitShader.mainTex = &tex0;
+	vp.model = torusTrans2;
+	torus2->render(img);
 	/*vp.model = float4x4::identity();
 	triangle->render(img);*/
 

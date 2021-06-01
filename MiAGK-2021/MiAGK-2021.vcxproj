@@ -153,6 +153,7 @@
     <ClCompile Include="PhongShader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="TexturedShader.cpp" />
+    <ClCompile Include="TexturedLitShader.cpp" />
     <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="VertexProcessor.cpp" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
+    <ClInclude Include="TexturedLitShader.hpp" />
     <ClInclude Include="TexturedShader.hpp" />
     <ClInclude Include="Triangle.hpp" />
     <ClInclude Include="Vertex.hpp" />
